@@ -22,7 +22,8 @@
         <form asp-action="Save" method="post">
             
             <!-- informações escondidas -->
-            <input type="hidden" />
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" name="op" value="@ViewBag.Op" />
 
             <!-- Primeira row: Id do Broker + Range -->
 

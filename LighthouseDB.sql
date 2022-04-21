@@ -71,8 +71,8 @@ GO
 
 CREATE PROC spInsertSensor(
 	@brokerId INT, 
-	@longitude DECIMAL(8, 6), 
-	@latitude DECIMAL(9, 6),
+	@longitude DECIMAL(9, 6), 
+	@latitude DECIMAL(8, 6),
 	@range DECIMAL(5, 2)
 )
 AS BEGIN
@@ -111,8 +111,8 @@ GO
 CREATE PROC spUpdateSensor(
 	@id INT,
 	@brokerId INT,
-	@longitude DECIMAL(8, 6), 
-	@latitude DECIMAL(9, 6),
+	@longitude DECIMAL(9, 6), 
+	@latitude DECIMAL(8, 6),
 	@range DECIMAL(5, 2)
 )
 AS BEGIN
