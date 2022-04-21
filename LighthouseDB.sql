@@ -7,7 +7,6 @@ USE LighthouseDB
 GO
 
 -- tables
-GO
 
 CREATE TABLE [dbo].[Location] (
 	[Id] INT NOT NULL PRIMARY KEY IDENTITY,
