@@ -10,8 +10,8 @@ GO
 
 CREATE TABLE [dbo].[Location] (
 	[Id] INT NOT NULL PRIMARY KEY IDENTITY,
-	[Longitude] DECIMAL(8, 6) NOT NULL,
-	[Latitude] DECIMAL(9, 6) NOT NULL
+	[Longitude] DECIMAL(9, 6) NOT NULL,
+	[Latitude] DECIMAL(8, 6) NOT NULL
 )
 GO
 
