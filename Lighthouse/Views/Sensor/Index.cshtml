@@ -1,0 +1,71 @@
+﻿@model List<SensorViewModel>
+
+@{
+    ViewData["Title"] = "Sensores";
+}
+
+<script>
+    function deleteEntry(id) {
+        if (confirm("Deseja mesmo excluir este registro?"))
+            location.href = "/Sensor/Delete?id=" + id;
+    }
+</script>
+
+
+<div class="d-flex justify-content-between mb-4 align-items-center">
+    <h1>Sensores</h1>
+    <div>
+        <a href="/Sensor/Register" class="btn btn-outline-primary" role="button">Cadastrar sensor</a>
+    </div>
+</div>
+
+<div class="table-responsive">
+
+    <table class="table table-striped text-center table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>Ação</th>
+                <th>Broker ID</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Raio de Atuação (KM)</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if(@Model != null) 
+            {
+            
+                @foreach(var row in @Model)
+                {
+                    <tr>
+                        <!-- Ação -->
+                        <td>
+                            <a class="text-decoration-none" href="/home/Edit?id=@row.Id">&#9998;</a>
+                            <a class="text-decoration-none" href="javascript:deleteEntry(@row.Id)">&#10060;</a>
+                        </td>
+
+                        <!-- Broker ID -->
+                        <td>@row.BrokerId</td>
+
+                        <!-- Latitude -->
+                        <td>@row.Latitude.ToString("0.000000")</td>
+
+                        <!-- Longitude -->
+                        <td>@row.Longitude.ToString("0.000000")</td>
+
+                        <!-- Raio de Atuação (KM) -->
+                        <td>@row.Range.ToString("0.00")</td>
+
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan=5>Não há sensores cadastrados no momento.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
