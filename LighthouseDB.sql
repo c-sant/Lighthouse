@@ -17,7 +17,7 @@ GO
 
 CREATE TABLE [dbo].[Sensor] (
 	[Id] INT NOT NULL PRIMARY KEY IDENTITY,
-	[BrokerId] INT NOT NULL,
+	[BrokerId] VARCHAR(30) NOT NULL,
 	[LocationId] INT NOT NULL FOREIGN KEY REFERENCES [Location](Id),
 	[RangeKM] DECIMAL(5, 2) NOT NULL
 )
@@ -70,7 +70,7 @@ END
 GO
 
 CREATE PROC spInsertSensor(
-	@brokerId INT, 
+	@brokerId VARCHAR(30),
 	@longitude DECIMAL(9, 6), 
 	@latitude DECIMAL(8, 6),
 	@range DECIMAL(5, 2)
@@ -129,5 +129,11 @@ AS BEGIN
 		LocationId = @locationId,
 		RangeKM = @range
 	WHERE Id = @id
+END
+GO
+
+CREATE PROC spGetNextId (@tableName varchar(50)) 
+AS BEGIN
+	EXEC ('SELECT ISNULL(MAX(Id) + 1, 1) id FROM ' + @tableName)
 END
 GO

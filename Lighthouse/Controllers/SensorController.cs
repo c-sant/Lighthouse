@@ -29,6 +29,9 @@ namespace Lighthouse.Controllers
 
                 SensorViewModel sensor = new SensorViewModel();
 
+                int nextId = new SensorDAO().GetNextId();
+                sensor.BrokerId = Helix.Utils.BuildBrokerId(nextId);
+
                 return View("Form", sensor);
             }
             catch (Exception ex)
@@ -82,9 +85,6 @@ namespace Lighthouse.Controllers
 
             if (sensor.Id < 0)
                 ModelState.AddModelError("Id", "Id inválido.");
-
-            if (sensor.BrokerId < 0)
-                ModelState.AddModelError("BrokerId", "Broker ID inválido.");
 
             if (sensor.Latitude < -90 || sensor.Latitude > 90)
                 ModelState.AddModelError("Latitude", "Latidude fora de alcance: o valor deve estar entre -90 e 90.");
