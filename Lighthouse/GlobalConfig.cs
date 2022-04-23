@@ -12,6 +12,7 @@ namespace Lighthouse
 
         public static int BrokerPort { get => 1026; }
         public static int MqttAgentPort { get => 4041; }
-        public static string BaseSensorId { get => "urn:ngsi-ld:esp:"; }
+        public static string BaseBrokerId { get => "urn:ngsi-ld:Motion:"; }
+        public static string BaseMqttAgentId { get => "Motion"; }
     }
 }

@@ -65,5 +65,19 @@ namespace Lighthouse.Helix
                 throw new Exception("Falha ao criar sensor!");
             }
         }
+
+        public void DeleteSensor(int sensorId)
+        {
+            string brokerSensorId = Helix.Utils.BuildBrokerId(sensorId);
+            
+            try
+            {
+                MakeHelixRequest(Method.Delete, $"v2/entities/{brokerSensorId}");
+            }
+            catch
+            {
+                Console.WriteLine($"Ocorreu algum erro ao deletar 'device' do Broker. SqlServerId = {sensorId}, BrokerSensorId = {brokerSensorId}");
+            }
+        }
     }
 }

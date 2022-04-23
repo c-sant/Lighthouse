@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using Lighthouse.Helix;
+using Lighthouse.Helpers;
 
 namespace Lighthouse.DAO
 {
@@ -70,8 +71,9 @@ namespace Lighthouse.DAO
         {
             int nextSensorId = GetNextId();
 
-            var brokerInteractor = new BrokerInteractor(GlobalConfig.HelixIp, GlobalConfig.BrokerPort);
-            brokerInteractor.RegisterSensor(nextSensorId);
+            // O MqttAgent já cria automaticamente o sensor no Broker.
+            var mqttAgentInteractor = new MqttAgentInteractor(GlobalConfig.HelixIp, GlobalConfig.MqttAgentPort);
+            mqttAgentInteractor.RegisterSensor(nextSensorId, new Point(sensor.Latitude, sensor.Longitude));
 
             SqlParameter[] parameters =
             {
@@ -86,10 +88,17 @@ namespace Lighthouse.DAO
 
         public void Delete(int id)
         {
+
             SqlParameter[] parameters =
             {
                 new SqlParameter("id", id)
             };
+
+            var mqttAgentInteractor = new MqttAgentInteractor(GlobalConfig.HelixIp, GlobalConfig.MqttAgentPort);
+            var brokerInteractor = new BrokerInteractor(GlobalConfig.HelixIp, GlobalConfig.BrokerPort);
+
+            mqttAgentInteractor.DeleteSensor(id);
+            brokerInteractor.DeleteSensor(id);
 
             HelperDAO.ExecuteProcedure("spDeleteSensor", parameters);
         }
