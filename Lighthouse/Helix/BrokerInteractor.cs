@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Lighthouse.Models;
+using Newtonsoft.Json.Linq;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -66,9 +67,9 @@ namespace Lighthouse.Helix
             }
         }
 
-        public void DeleteSensor(int sensorId)
+        public void DeleteSensor(int sqlSensorId)
         {
-            string brokerSensorId = Helix.Utils.BuildBrokerId(sensorId);
+            string brokerSensorId = Helix.Utils.BuildBrokerId(sqlSensorId);
             
             try
             {
@@ -76,8 +77,34 @@ namespace Lighthouse.Helix
             }
             catch
             {
-                Console.WriteLine($"Ocorreu algum erro ao deletar 'device' do Broker. SqlServerId = {sensorId}, BrokerSensorId = {brokerSensorId}");
+                Console.WriteLine($"Ocorreu algum erro ao deletar 'device' do Broker. SqlServerId = {sqlSensorId}, BrokerSensorId = {brokerSensorId}");
             }
+        }
+
+        public void UpdateSensor(SensorViewModel sensor)
+        {
+            JObject newSensor = BuildUpdatePayload(sensor);
+
+            RestResponse<string> response = MakeHelixRequest(Method.Post, $"v2/entities/{sensor.BrokerId}/attrs", payload: newSensor);
+
+            if (response.StatusCode != System.Net.HttpStatusCode.NoContent)
+                throw new Exception("Falha ao atualizar sensor. Ele não foi identificado no Broker!");
+        }
+
+        private JObject BuildUpdatePayload(SensorViewModel sensor)
+        {
+            string point = Helix.Utils.BuildLocationString(new Helpers.Point(sensor.Latitude, sensor.Longitude));
+
+            return new JObject()
+            {
+                { "location",
+                    new JObject()
+                    {
+                        { "type", "geo:point" },
+                        { "value", point }
+                    } 
+                }
+            };
         }
     }
 }

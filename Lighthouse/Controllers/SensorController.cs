@@ -29,9 +29,6 @@ namespace Lighthouse.Controllers
 
                 SensorViewModel sensor = new SensorViewModel();
 
-                int nextId = new SensorDAO().GetNextId();
-                sensor.BrokerId = Helix.Utils.BuildBrokerId(nextId);
-
                 return View("Form", sensor);
             }
             catch (Exception ex)

@@ -31,7 +31,6 @@ namespace Lighthouse.DAO
             return new SensorViewModel()
             {
                 Id = Convert.ToInt32(row["Id"]),
-                BrokerId = row["BrokerId"].ToString(),
                 Longitude = Convert.ToDouble(row["Longitude"]),
                 Latitude = Convert.ToDouble(row["Latitude"]),
                 Range = Convert.ToDouble(row["RangeKM"])
@@ -69,21 +68,19 @@ namespace Lighthouse.DAO
 
         public void Insert(SensorViewModel sensor)
         {
-            int nextSensorId = GetNextId();
-
-            // O MqttAgent já cria automaticamente o sensor no Broker.
-            var mqttAgentInteractor = new MqttAgentInteractor(GlobalConfig.HelixIp, GlobalConfig.MqttAgentPort);
-            mqttAgentInteractor.RegisterSensor(nextSensorId, new Point(sensor.Latitude, sensor.Longitude));
-
             SqlParameter[] parameters =
             {
-                new SqlParameter("brokerId", Helix.Utils.BuildBrokerId(nextSensorId)),
                 new SqlParameter("longitude", sensor.Longitude),
                 new SqlParameter("latitude", sensor.Latitude),
                 new SqlParameter("range", sensor.Range)
             };
+            
+            DataTable queryResponse = HelperDAO.ExecuteQueryProcedure("spInsertSensor", parameters);
+            int createdId = (int)queryResponse.Rows[0][0];
 
-            HelperDAO.ExecuteProcedure("spInsertSensor", parameters);
+            // O MqttAgent já cria automaticamente o sensor no Broker.
+            var mqttAgentInteractor = new MqttAgentInteractor(GlobalConfig.HelixIp, GlobalConfig.MqttAgentPort);
+            mqttAgentInteractor.RegisterSensor(createdId, new Point(sensor.Latitude, sensor.Longitude));
         }
 
         public void Delete(int id)
@@ -94,21 +91,19 @@ namespace Lighthouse.DAO
                 new SqlParameter("id", id)
             };
 
-            var mqttAgentInteractor = new MqttAgentInteractor(GlobalConfig.HelixIp, GlobalConfig.MqttAgentPort);
-            var brokerInteractor = new BrokerInteractor(GlobalConfig.HelixIp, GlobalConfig.BrokerPort);
-
-            mqttAgentInteractor.DeleteSensor(id);
-            brokerInteractor.DeleteSensor(id);
+            new MqttAgentInteractor(GlobalConfig.HelixIp, GlobalConfig.MqttAgentPort).DeleteSensor(id);
+            new BrokerInteractor(GlobalConfig.HelixIp, GlobalConfig.BrokerPort).DeleteSensor(id);
 
             HelperDAO.ExecuteProcedure("spDeleteSensor", parameters);
         }
 
         public void Update(SensorViewModel sensor)
         {
+            new BrokerInteractor(GlobalConfig.HelixIp, GlobalConfig.BrokerPort).UpdateSensor(sensor);
+
             SqlParameter[] parameters =
             {
                 new SqlParameter("id", sensor.Id),
-                new SqlParameter("brokerId", sensor.BrokerId),
                 new SqlParameter("longitude", sensor.Longitude),
                 new SqlParameter("latitude", sensor.Latitude),
                 new SqlParameter("range", sensor.Range)

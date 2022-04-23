@@ -1,5 +1,6 @@
 -- database
 
+-- DROP DATABASE LighthouseDB
 CREATE DATABASE LighthouseDB
 GO
 
@@ -17,7 +18,6 @@ GO
 
 CREATE TABLE [dbo].[Sensor] (
 	[Id] INT NOT NULL PRIMARY KEY IDENTITY,
-	[BrokerId] VARCHAR(30) NOT NULL,
 	[LocationId] INT NOT NULL FOREIGN KEY REFERENCES [Location](Id),
 	[RangeKM] DECIMAL(5, 2) NOT NULL
 )
@@ -60,7 +60,6 @@ CREATE PROC spListSensors
 AS BEGIN
 	SELECT 
 		s.Id AS [Id],
-		s.BrokerId AS [BrokerId],
 		l.Latitude AS [Latitude],
 		l.Longitude AS [Longitude],
 		s.RangeKM AS [RangeKM]
@@ -70,27 +69,42 @@ END
 GO
 
 CREATE PROC spInsertSensor(
-	@brokerId VARCHAR(30),
 	@longitude DECIMAL(9, 6), 
 	@latitude DECIMAL(8, 6),
 	@range DECIMAL(5, 2)
 )
 AS BEGIN
-	DECLARE @locationId INT
+	DECLARE @locationIdTable TABLE (ID int)
+	DECLARE @locationId int
 
-	IF NOT EXISTS(SELECT * FROM [Location] WHERE Longitude = @longitude AND Latitude = @latitude)
-		INSERT INTO [Location] VALUES (@longitude, @latitude)
+	INSERT INTO [Location] 
+	OUTPUT inserted.Id INTO @locationIdTable
+	VALUES (@longitude, @latitude)
 
-	SELECT @locationId = Id FROM [Location] WHERE Longitude = @longitude AND Latitude = @latitude
+	DECLARE @ID TABLE (ID int)
 
-	INSERT INTO [Sensor] VALUES
-	(@brokerId, @locationId, @range)
+	SELECT @locationId = Id FROM @locationIdTable
+
+	INSERT INTO [Sensor] 
+	OUTPUT inserted.Id INTO @ID
+	VALUES (@locationId, @range)
+
+	SELECT ID FROM @ID
 END
 GO
 
 CREATE PROC spDeleteSensor(@id INT)
 AS BEGIN
+	DECLARE @locationId INT
+
+	SELECT @locationId = s.LocationId
+	FROM Sensor s
+	WHERE s.Id = @id
+
 	DELETE Sensor WHERE Id = @id
+	
+	DELETE FROM [Location]
+	WHERE Id = @locationId
 END
 GO
 
@@ -98,7 +112,6 @@ CREATE PROC spReadSensor(@id INT)
 AS BEGIN
 	SELECT 
 		s.Id AS [Id],
-		s.BrokerId AS [BrokerId],
 		l.Latitude AS [Latitude],
 		l.Longitude AS [Longitude],
 		s.RangeKM AS [RangeKM]
@@ -110,7 +123,6 @@ GO
 
 CREATE PROC spUpdateSensor(
 	@id INT,
-	@brokerId INT,
 	@longitude DECIMAL(9, 6), 
 	@latitude DECIMAL(8, 6),
 	@range DECIMAL(5, 2)
@@ -118,15 +130,18 @@ CREATE PROC spUpdateSensor(
 AS BEGIN
 	DECLARE @locationId INT
 
-	IF NOT EXISTS(SELECT * FROM [Location] WHERE Longitude = @longitude AND Latitude = @latitude)
-		INSERT INTO [Location] VALUES (@longitude, @latitude)
+	SELECT @locationId = s.LocationId
+	FROM Sensor s
+	WHERE s.Id = @id
 
-	SELECT @locationId = Id FROM [Location] WHERE Longitude = @longitude AND Latitude = @latitude
+	UPDATE [Location]
+	SET 
+		Latitude = @latitude,
+		Longitude = @longitude
+	WHERE Id = @locationId
 
 	UPDATE Sensor 
 	SET
-		BrokerId = @brokerId,
-		LocationId = @locationId,
 		RangeKM = @range
 	WHERE Id = @id
 END
@@ -134,6 +149,6 @@ GO
 
 CREATE PROC spGetNextId (@tableName varchar(50)) 
 AS BEGIN
-	EXEC ('SELECT ISNULL(MAX(Id) + 1, 1) id FROM ' + @tableName)
+	EXEC ('SELECT IDENT_CURRENT(''' + @tableName + ''')')
 END
 GO

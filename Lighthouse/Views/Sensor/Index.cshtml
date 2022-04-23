@@ -25,7 +25,8 @@
         <thead class="thead-dark">
             <tr>
                 <th>Ação</th>
-                <th>Broker ID</th>
+                <th>ID Broker</th>
+                <th>ID Mqtt Agent</th>
                 <th>Latitude</th>
                 <th>Longitude</th>
                 <th>Raio de Atuação (KM)</th>
@@ -38,26 +39,29 @@
             
                 @foreach(var row in @Model)
                 {
-                    <tr>
-                        <!-- Ação -->
-                        <td>
-                            <a class="text-decoration-none" href="/Sensor/Edit?id=@row.Id">&#9998;</a>
-                            <a class="text-decoration-none" href="javascript:deleteEntry(@row.Id)">&#10060;</a>
-                        </td>
+            <tr>
+                <!-- Ação -->
+                <td>
+                    <a class="text-decoration-none" href="/Sensor/Edit?id=@row.Id">&#9998;</a>
+                    <a class="text-decoration-none" href="javascript:deleteEntry(@row.Id)">&#10060;</a>
+                </td>
 
-                        <!-- Broker ID -->
-                        <td>@row.BrokerId</td>
+                <!-- Broker ID -->
+                <td>@row.BrokerId</td>
 
-                        <!-- Latitude -->
-                        <td>@row.Latitude.ToString("0.000000")</td>
+                <!-- Mqtt Agent -->
+                <td>@row.MqttAgentId</td>
 
-                        <!-- Longitude -->
-                        <td>@row.Longitude.ToString("0.000000")</td>
+                <!-- Latitude -->
+                <td>@row.Latitude.ToString("0.000000")</td>
 
-                        <!-- Raio de Atuação (KM) -->
-                        <td>@row.Range.ToString("0.00")</td>
+                <!-- Longitude -->
+                <td>@row.Longitude.ToString("0.000000")</td>
 
-                    </tr>
+                <!-- Raio de Atuação (KM) -->
+                <td>@row.Range.ToString("0.00")</td>
+
+            </tr>
                 }
             }
             else

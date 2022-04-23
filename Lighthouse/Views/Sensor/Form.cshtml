@@ -20,26 +20,28 @@
 
     <div class="card-body justify-content-center mx-2">
         <form asp-action="Save" method="post">
-            
+
             <!-- informações escondidas -->
             <input type="hidden" asp-for="Id" />
             <input type="hidden" name="op" value="@ViewBag.Op" />
 
-            <!-- Primeira row: Id do Broker + Range -->
+            <!-- Primeira row: Disabled Ids -->
 
             <div class="row justify-content-between mb-4">
                 <div class="col-6">
                     <label for="BrokerId">Broker ID</label>
-                    <input type="text" asp-for="BrokerId" class="form-control" readonly/>
+                    <input type="text" asp-for="BrokerId" class="form-control" disabled />
                     <span asp-validation-for="BrokerId" class="small text-danger"></span>
                 </div>
 
                 <div class="col-6">
-                    <label for="Range">Alcance (KM)</label>
-                    <input type="text" asp-for="Range" class="form-control" />
-                    <span asp-validation-for="Range" class="small text-danger"></span>
+                    <label for="BrokerId">Broker ID</label>
+                    <input type="text" asp-for="MqttAgentId" class="form-control" disabled />
+                    <span asp-validation-for="MqttAgentId" class="small text-danger"></span>
                 </div>
+
             </div>
+
 
             <!-- Segunda Row: Latitude + Longitude -->
 
@@ -49,7 +51,7 @@
                     <input type="text" asp-for="Latitude" class="form-control" placeholder="00.000000" />
                     <span asp-validation-for="Latitude" class="small text-danger"></span>
                 </div>
-                
+
                 <div class="col-6">
                     <label for="Longitude">Longitude</label>
                     <input type="text" asp-for="Longitude" class="form-control" placeholder="000.000000" />
@@ -57,7 +59,16 @@
                 </div>
             </div>
 
+            <!-- Terceira Row: Alcance (KM) -->
+            <div class="row justify-content-between mb-4">
+                <div class="col-6">
+                    <label for="Range">Alcance (KM)</label>
+                    <input type="text" asp-for="Range" class="form-control" />
+                    <span asp-validation-for="Range" class="small text-danger"></span>
+                </div>
+            </div>
             <!-- Botões -->
+
 
             <div class="mt-5 d-flex justify-content-around">
                 <a class="btn btn-outline-secondary" href="javascript:quitForm()">Voltar</a>
