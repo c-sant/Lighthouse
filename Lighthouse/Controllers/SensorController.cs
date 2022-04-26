@@ -12,7 +12,7 @@ namespace Lighthouse.Controllers
         {
             try
             {
-                List<SensorViewModel> sensors = new SensorDAO().ReadAllEntries();
+                List<SensorViewModel> sensors = new SensorDAO().ReadAll();
                 return View(sensors);
             }
             catch(Exception ex)

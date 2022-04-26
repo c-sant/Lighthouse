@@ -5,28 +5,18 @@ using System.Data;
 using System.Data.SqlClient;
 using Lighthouse.Helix;
 using Lighthouse.Helpers;
+using System.Linq;
 
 namespace Lighthouse.DAO
 {
-    public class SensorDAO
+    public class SensorDAO : AbstractBaseDAO<SensorViewModel>
     {
-        // Vai ser overrride pois se tornará abstrato na classe pai
-        protected string _tableName { get => "Sensor"; }
-
-        // Se tornará somente um método na classe pai
-        public int GetNextId()
+        protected override void SetTable()
         {
-            DataTable dtResult = HelperDAO.ExecuteQueryProcedure("spGetNextId",
-                new SqlParameter[] 
-                {
-                    new SqlParameter("tableName", _tableName)
-                }
-            );
-
-            return (int)dtResult.Rows[0][0];
+            _tableName = "Sensor";
         }
 
-        public SensorViewModel RowToViewModel(DataRow row)
+        protected override SensorViewModel RowToModel(DataRow row)
         {
             return new SensorViewModel()
             {
@@ -37,45 +27,37 @@ namespace Lighthouse.DAO
             };
         }
 
-        public List<SensorViewModel>? ReadAllEntries()
+        protected override SqlParameter[] GetParameters(SensorViewModel model)
         {
-            var entries = new List<SensorViewModel>();
+            return new SqlParameter[]
+            {
+                new SqlParameter("Id", model.Id),
+                new SqlParameter("Longitude", model.Longitude),
+                new SqlParameter("Latitude", model.Latitude),
+                new SqlParameter("Range", model.Range)
+            };
+        }
+
+        public override List<SensorViewModel>? ReadAll()
+        {
             DataTable table = HelperDAO.ExecuteQueryProcedure("spListSensors");
 
             if (table.Rows.Count == 0)
                 return null;
 
+            var entries = new List<SensorViewModel>();
+
             foreach (DataRow row in table.Rows)
-                entries.Add(RowToViewModel(row));
+                entries.Add(RowToModel(row));
 
             return entries;
         }
 
-        public SensorViewModel Read(int id)
+        public override void Insert(SensorViewModel sensor)
         {
-            SqlParameter[] parameters =
-            {
-                new SqlParameter("id", id)
-            };
+            SqlParameter[] parameters = GetParameters(sensor).Skip(1).ToArray();
 
-            DataTable table = HelperDAO.ExecuteQueryProcedure("spReadSensor", parameters);
-
-            if (table.Rows.Count == 0)
-                return null;
-
-            return RowToViewModel(table.Rows[0]);
-        }
-
-        public void Insert(SensorViewModel sensor)
-        {
-            SqlParameter[] parameters =
-            {
-                new SqlParameter("longitude", sensor.Longitude),
-                new SqlParameter("latitude", sensor.Latitude),
-                new SqlParameter("range", sensor.Range)
-            };
-            
-            DataTable queryResponse = HelperDAO.ExecuteQueryProcedure("spInsertSensor", parameters);
+            DataTable queryResponse = HelperDAO.ExecuteQueryProcedure("spInsert_Sensor", parameters);
             int createdId = (int)queryResponse.Rows[0][0];
 
             // O MqttAgent já cria automaticamente o sensor no Broker.
@@ -83,33 +65,19 @@ namespace Lighthouse.DAO
             mqttAgentInteractor.RegisterSensor(createdId, new Point(sensor.Latitude, sensor.Longitude));
         }
 
-        public void Delete(int id)
+        public override void Delete(int id)
         {
-
-            SqlParameter[] parameters =
-            {
-                new SqlParameter("id", id)
-            };
-
             new MqttAgentInteractor(GlobalConfig.HelixIp, GlobalConfig.MqttAgentPort).DeleteSensor(id);
             new BrokerInteractor(GlobalConfig.HelixIp, GlobalConfig.BrokerPort).DeleteSensor(id);
 
-            HelperDAO.ExecuteProcedure("spDeleteSensor", parameters);
+            base.Delete(id);
         }
 
-        public void Update(SensorViewModel sensor)
+        public override void Update(SensorViewModel sensor)
         {
             new BrokerInteractor(GlobalConfig.HelixIp, GlobalConfig.BrokerPort).UpdateSensor(sensor);
 
-            SqlParameter[] parameters =
-            {
-                new SqlParameter("id", sensor.Id),
-                new SqlParameter("longitude", sensor.Longitude),
-                new SqlParameter("latitude", sensor.Latitude),
-                new SqlParameter("range", sensor.Range)
-            };
-
-            HelperDAO.ExecuteProcedure("spUpdateSensor", parameters);
+            base.Update(sensor);
         }
     }
 }

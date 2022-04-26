@@ -54,7 +54,51 @@ CREATE TABLE [EnvironmentInteraction] (
 )
 GO
 
--- procedures
+-- general procedures
+
+CREATE PROC spRead(@id INT, @tableName VARCHAR(50))
+AS BEGIN
+	SELECT 
+		s.Id AS [Id],
+		l.Latitude AS [Latitude],
+		l.Longitude AS [Longitude],
+		s.RangeKM AS [RangeKM]
+	FROM [Sensor] s
+	LEFT JOIN [Location] l ON s.LocationId = l.Id 
+	WHERE s.Id = @id
+END
+GO
+
+CREATE PROC spReadAll(@tableName VARCHAR(50))
+AS BEGIN
+	EXEC('SELECT * FROM [' + @tableName + ']')
+END
+GO
+
+CREATE PROC spDelete(@id INT, @tableName VARCHAR(50))
+AS BEGIN
+	DECLARE @locationId INT
+
+	SELECT @locationId = s.LocationId
+	FROM Sensor s
+	WHERE s.Id = @id
+
+	DELETE Sensor WHERE Id = @id
+	
+	DELETE FROM [Location]
+	WHERE Id = @locationId
+END
+GO
+
+CREATE PROC spGetNextId (@tableName VARCHAR(50)) 
+AS BEGIN
+	EXEC('SELECT IDENT_CURRENT(''' + @tableName + ''')')
+END
+GO
+
+-- specific procedures
+
+-- sensors
 
 CREATE PROC spListSensors
 AS BEGIN
@@ -68,7 +112,7 @@ AS BEGIN
 END
 GO
 
-CREATE PROC spInsertSensor(
+CREATE PROC spInsert_Sensor(
 	@longitude DECIMAL(9, 6), 
 	@latitude DECIMAL(8, 6),
 	@range DECIMAL(5, 2)
@@ -93,35 +137,7 @@ AS BEGIN
 END
 GO
 
-CREATE PROC spDeleteSensor(@id INT)
-AS BEGIN
-	DECLARE @locationId INT
-
-	SELECT @locationId = s.LocationId
-	FROM Sensor s
-	WHERE s.Id = @id
-
-	DELETE Sensor WHERE Id = @id
-	
-	DELETE FROM [Location]
-	WHERE Id = @locationId
-END
-GO
-
-CREATE PROC spReadSensor(@id INT)
-AS BEGIN
-	SELECT 
-		s.Id AS [Id],
-		l.Latitude AS [Latitude],
-		l.Longitude AS [Longitude],
-		s.RangeKM AS [RangeKM]
-	FROM [Sensor] s
-	LEFT JOIN [Location] l ON s.LocationId = l.Id 
-	WHERE s.Id = @id
-END
-GO
-
-CREATE PROC spUpdateSensor(
+CREATE PROC spUpdate_Sensor(
 	@id INT,
 	@longitude DECIMAL(9, 6), 
 	@latitude DECIMAL(8, 6),
@@ -144,11 +160,5 @@ AS BEGIN
 	SET
 		RangeKM = @range
 	WHERE Id = @id
-END
-GO
-
-CREATE PROC spGetNextId (@tableName varchar(50)) 
-AS BEGIN
-	EXEC ('SELECT IDENT_CURRENT(''' + @tableName + ''')')
 END
 GO

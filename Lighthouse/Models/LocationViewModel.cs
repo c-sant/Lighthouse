@@ -1,8 +1,7 @@
 ﻿namespace Lighthouse.Models
 {
-    public class LocationViewModel
+    public class LocationViewModel : AbstractBaseViewModel
     {
-        public int Id { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
     }
