@@ -46,13 +46,19 @@ CREATE TABLE [dbo].[EnvironmentStatus] (
 )
 GO
 
-CREATE TABLE [EnvironmentInteraction] (
+CREATE TABLE [dbo].[EnvironmentInteraction] (
 	[Id] INT NOT NULL PRIMARY KEY IDENTITY,
 	[SensorId] INT NOT NULL FOREIGN KEY REFERENCES [Sensor](Id),
 	[StatusId] INT NOT NULL FOREIGN KEY REFERENCES [EnvironmentStatus](Id),
 	[DateReference] DATETIME NOT NULL
 )
 GO
+
+CREATE TABLE [dbo].[Occurrence] (
+	[Id] INT NOT NULL PRIMARY KEY IDENTITY,
+	[LocationId] INT NOT NULL FOREIGN KEY REFERENCES [Location](id),
+	[DateReference] DATETIME NOT NULL
+)
 
 -- general procedures
 
@@ -90,7 +96,7 @@ AS BEGIN
 END
 GO
 
-CREATE PROC spGetNextId (@tableName VARCHAR(50)) 
+CREATE PROC spGetNextId(@tableName VARCHAR(50)) 
 AS BEGIN
 	EXEC('SELECT IDENT_CURRENT(''' + @tableName + ''')')
 END
@@ -162,3 +168,29 @@ AS BEGIN
 	WHERE Id = @id
 END
 GO
+
+-- occurrences
+
+CREATE PROC spInsert_Occurrence (
+	@longitude DECIMAL(9, 6),
+	@latitude DECIMAL(8, 6),
+	@dateReference DATETIME
+)
+AS BEGIN
+	DECLARE @locationIdTable TABLE (ID int)
+	DECLARE @locationId int
+
+	INSERT INTO [Location] 
+	OUTPUT inserted.Id INTO @locationIdTable
+	VALUES (@longitude, @latitude)
+
+	DECLARE @ID TABLE (ID int)
+
+	SELECT @locationId = Id FROM @locationIdTable
+
+	INSERT INTO [Occurrence] 
+	OUTPUT inserted.Id INTO @ID
+	VALUES (@locationId, @dateReference)
+
+	SELECT ID FROM @ID
+END
