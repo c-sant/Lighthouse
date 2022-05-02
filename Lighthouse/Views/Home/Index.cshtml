@@ -3,10 +3,15 @@
 }
 
 <div class="body-custom">
-    <div class="body-retangle typewriter">
+    <div class="body-retangle-1 typewriter">
         <p id="body-title"> LIGHTHOUSE</p>
         <p id="text">Nasceu, assim, o projeto Lighthouse, que, assim como um farol que guia navios durante a noite, pretende guiar vítimas a um futuro mais seguro</p>
     </div>
+    <div class="body-retangle-2 ">
+    </div>
+    <div class="body-retangle-3 ">
+        <h1>Conheça mais sobre nosso projeto</h1> <a id="seta"></a>
+        
 </div>
 
 <script>
@@ -16,7 +21,7 @@
     var html = document.getElementById("text").innerHTML;
     var attr = tag.setAttribute("data", html);
     var txt = tag.getAttribute("data");
-    var speed = 270;
+    var speed = 170;
 
     function typeWriter() {
       if (i <= txt.length) {
@@ -24,10 +29,18 @@
         i++;
         setTimeout(typeWriter, speed);
       }
-        console.log(document.getElementById("text").innerHTML);
+      else{
+          document.getElementById("text").overflow = "hidden";
+          i = 0;
+          typeWriter();
+      }
+      
     }
-
-       typeWriter();
+    
+    typeWriter();
+    
+        
+       
 </script>
 
 
