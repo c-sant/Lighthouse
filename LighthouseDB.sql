@@ -65,14 +65,22 @@ GO
 
 CREATE PROC spRead(@id INT, @tableName VARCHAR(MAX))
 AS BEGIN
-	SELECT 
-		s.Id AS [Id],
-		l.Latitude AS [Latitude],
-		l.Longitude AS [Longitude],
-		s.RangeKM AS [RangeKM]
-	FROM [Sensor] s
-	LEFT JOIN [Location] l ON s.LocationId = l.Id 
-	WHERE s.Id = @id
+	EXEC('SELECT * FROM [' + @tableName + '] WHERE [Id] = ' + @id)
+END
+GO
+
+CREATE PROC spReadWithLocation(@id INT, @tableName VARCHAR(MAX))
+AS BEGIN
+	EXEC (
+		'''
+		SELECT
+			t.*, 
+			l.[Latitude],
+			l.[Longitude]
+		FROM [''' + @tableName + ''']
+		LEFT JOIN [Location] l ON t.[LocationId] = l.[Id]
+		WHERE t.[Id] = ''' + @id
+	)
 END
 GO
 
@@ -82,9 +90,24 @@ AS BEGIN
 END
 GO
 
+CREATE PROC spReadAllWithLocation(@tableName VARCHAR(MAX))
+AS BEGIN
+	EXEC (
+		'''
+		SELECT
+			t.*,
+			l.[Latitude],
+			l.[Longitude]
+		FROM [''' + @tableName + ''']
+		LEFT JOIN [Location] l ON t.[LocationId] = l.[Id]
+		'''
+	)
+END
+GO
+
 CREATE PROC spDelete(@id INT, @tableName VARCHAR(MAX))
 AS BEGIN
-	EXEC('DELETE [' + @tableName + '] WHERE Id = ' + @id)
+	EXEC('DELETE [' + @tableName + '] WHERE [Id] = ' + @id)
 END
 GO
 
@@ -192,6 +215,56 @@ AS BEGIN
 END
 GO
 
+-- User
+
+CREATE PROC spInsert_User (
+	@name VARCHAR(MAX),
+	@email VARCHAR(MAX),
+	@password VARCHAR(256),
+	@picture VARBINARY(MAX)
+)
+AS BEGIN
+	DECLARE @pictureId INT
+
+	IF NOT EXISTS(SELECT TOP(1) 1 FROM [Picture] WHERE [Content] = @picture)
+		INSERT INTO [Picture] VALUES (@picture)
+
+	SELECT @pictureId = [Id] FROM [Picture] WHERE [Content] = @picture
+
+	INSERT INTO [User]
+	VALUES(@name, @email, @password, @pictureId)
+END
+GO
+
+CREATE PROC spUpdate_User (
+	@id INT,
+	@name VARCHAR(MAX),
+	@email VARCHAR(MAX),
+	@password VARCHAR(256),
+	@picture VARBINARY(MAX)
+)
+AS BEGIN
+	DECLARE @pictureId INT
+
+	IF NOT EXISTS(SELECT TOP(1) 1 FROM [Picture] WHERE [Content] = @picture)
+		INSERT INTO [Picture] VALUES (@picture)
+
+	SELECT @pictureId = [Id] FROM [Picture] WHERE [Content] = @picture
+
+	UPDATE 
+		[User]
+	SET
+		[Name] = @name,
+		[Email] = @email,
+		[Password] = @password,
+		[PictureId] = @pictureId
+	WHERE
+		[Id] = @id
+END
+GO
+
+-- triggers
+
 CREATE TRIGGER trgDelete_Sensor ON [Sensor]
 FOR DELETE
 AS BEGIN
@@ -199,7 +272,7 @@ AS BEGIN
 
 	SELECT @locationId = [LocationId] FROM deleted
 
-	DELETE [Location] WHERE Id = @locationId
+	DELETE [Location] WHERE [Id] = @locationId
 END
 GO
 
@@ -210,6 +283,6 @@ AS BEGIN
 
 	SELECT @locationId = [LocationId] FROM deleted
 
-	DELETE [Location] WHERE Id = @locationId
+	DELETE [Location] WHERE [Id] = @locationId
 END
 GO
