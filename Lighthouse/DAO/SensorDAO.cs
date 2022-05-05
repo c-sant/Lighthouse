@@ -60,9 +60,10 @@ namespace Lighthouse.DAO
             DataTable queryResponse = HelperDAO.ExecuteQueryProcedure("spInsert_Sensor", parameters);
             int createdId = (int)queryResponse.Rows[0][0];
 
-            // O MqttAgent já cria automaticamente o sensor no Broker.
             var mqttAgentInteractor = new MqttAgentInteractor(GlobalConfig.HelixIp, GlobalConfig.MqttAgentPort);
-            mqttAgentInteractor.RegisterSensor(createdId, new Point(sensor.Latitude, sensor.Longitude));
+            mqttAgentInteractor.CreateSensor(createdId, new Point(sensor.Latitude, sensor.Longitude));
+            
+            new BrokerInteractor(GlobalConfig.HelixIp, GlobalConfig.BrokerPort).RegisterSensor(sensor.Id);
         }
 
         public override void Delete(int id)

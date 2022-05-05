@@ -19,52 +19,12 @@ namespace Lighthouse.Helix
 
         public void RegisterSensor(int sqlSensorId)
         {
-            JObject defaultPayload = JObject.Parse(@"{
-'type': 'iot',
+            JObject registerPayload = GetRegisterSensorPayload(sqlSensorId);
 
-'temperature': {
-'type': 'float',
-'value': 0
-}
-,
-'humidity': {
-'type': 'float',
-'value': 0
-},
+            RestResponse<string> response = MakeHelixRequest(Method.Post, "v2/registrations", payload: registerPayload);
 
-'airPressure': {
-    'type': 'float',
-    'value': 0
-},
-
-'waterLevel': {
-    'type': 'float',
-    'value': 0
-},
-
-'location': {
-'value': '41.3763726, 2.1864475',
-'type': 'geo:point',
-'metadata': {
-    'crs': {
-    'value': 'WGS84'
-    }
-}
-}
-}");
-            defaultPayload.Add("id", $"{Helix.Utils.BuildBrokerId(sqlSensorId)}");
-
-            try
-            {
-                RestResponse<string> response = MakeHelixRequest(Method.Post, "v2/entities", defaultPayload);
-
-                if (response.StatusCode == System.Net.HttpStatusCode.UnprocessableEntity)
-                    throw new Exception();
-            }
-            catch
-            {
-                throw new Exception("Falha ao criar sensor!");
-            }
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                throw new Exception("Falha registrando sensor! Não foi possível se conectar com o Broker!");
         }
 
         public void DeleteSensor(int sqlSensorId)
@@ -106,5 +66,27 @@ namespace Lighthouse.Helix
                 }
             };
         }
+
+        private JObject GetRegisterSensorPayload(int sensorId)
+        {
+            JObject defaultSensorConfig = JObject.Parse(@"{
+              'description': 'Medição do sensor',
+              'dataProvided': {
+                'entities': [
+                  {
+                    'id': '" + Helix.Utils.BuildBrokerId(sensorId) + @"', 'type': 'Motion'
+                  }
+                ],
+                'attrs': ['temperature', 'humidity', 'airPressure', 'isRaining']
+              },
+              'provider': {
+                'http': {'url': 'http://" + GlobalConfig.HelixIp + @":4041'},
+                'legacyForwarding': true
+              }
+            }");
+
+            return defaultSensorConfig;
+        }
+
     }
 }

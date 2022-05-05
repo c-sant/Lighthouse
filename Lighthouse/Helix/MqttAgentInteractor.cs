@@ -14,9 +14,14 @@ namespace Lighthouse.Helix
         protected override string _frameworkName { get => "Mqtt Agent"; }
         protected override string _pingEndpoint { get => "iot/about"; }
 
-        public void RegisterSensor(int sensorId, Point location)
+        public void CreateSensor(int sensorId, Point location)
         {
-            JObject sensor  = GetCreateSensorPayload(sensorId, location);
+            CreateMqttSensor(sensorId, location);
+        }
+
+        private void CreateMqttSensor(int sensorId, Point location)
+        {
+            JObject sensor = GetCreateSensorPayload(sensorId, location);
 
             RestResponse<string> response = MakeHelixRequest(Method.Post, "iot/devices", payload: sensor);
 
@@ -51,7 +56,7 @@ namespace Lighthouse.Helix
                    { 'object_id': 't', 'name': 'temperature', 'type': 'Float' },
                    { 'object_id': 'h', 'name': 'humidity', 'type': 'Float' },
                    { 'object_id': 'a', 'name': 'airPressure', 'type': 'Float' },
-                   { 'object_id': 'w', 'name': 'waterLevel', 'type': 'Float' }
+                   { 'object_id': 'r', 'name': 'isRaining', 'type': 'Boolean' }
                  ],
                  'static_attributes': [
                         { 'object_id':'location', 'type': 'geo:point', 'name':'location' }
