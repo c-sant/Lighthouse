@@ -59,6 +59,7 @@ CREATE TABLE [dbo].[Occurrence] (
 	[LocationId] INT NOT NULL FOREIGN KEY REFERENCES [Location](id),
 	[DateReference] DATETIME NOT NULL
 )
+GO
 
 -- general procedures
 
@@ -81,18 +82,9 @@ AS BEGIN
 END
 GO
 
-CREATE PROC spDelete(@id INT, @tableName VARCHAR(50))
+CREATE PROC spDelete(@id INT, @tableName VARCHAR(MAX))
 AS BEGIN
-	DECLARE @locationId INT
-
-	SELECT @locationId = s.LocationId
-	FROM Sensor s
-	WHERE s.Id = @id
-
-	DELETE Sensor WHERE Id = @id
-	
-	DELETE FROM [Location]
-	WHERE Id = @locationId
+	EXEC('DELETE ' + @tableName + ' WHERE Id = ' + @id)
 END
 GO
 
@@ -194,3 +186,26 @@ AS BEGIN
 
 	SELECT ID FROM @ID
 END
+GO
+
+CREATE TRIGGER trgDelete_Sensor ON [Sensor]
+FOR DELETE
+AS BEGIN
+	DECLARE @locationId INT
+
+	SELECT @locationId = LocationId FROM deleted
+
+	DELETE [Location] WHERE Id = @locationId
+END
+GO
+
+CREATE TRIGGER trgDelete_Occurrence ON [Occurrence]
+FOR DELETE
+AS BEGIN
+	DECLARE @locationId INT
+
+	SELECT @locationId = LocationId FROM deleted
+
+	DELETE [Location] WHERE Id = @locationId
+END
+GO
