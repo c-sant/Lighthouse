@@ -1,0 +1,53 @@
+﻿@model OccurrenceViewModel
+
+@{
+    ViewData["Title"] = "Formulário";
+}
+
+<script>
+
+    function quitForm() {
+        if(confirm("Todas as alterações não salvas serão perdidas. Deseja mesmo sair?"))
+            location.href = "/Occurrence/Index"
+    }
+
+</script>
+
+<div class="card mx-5">
+    <div class="card-header mx-2 text-center">
+        <h3>@(ViewBag.Op == 'I'? "Registro de Ocorrência" : "Edição de Ocorrência" )</h3>
+    </div>
+
+    <div class="card-body justify-content-center mx-2">
+        <form asp-action="Save" method="post">
+
+            <!-- informações escondidas -->
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" name="op" value="@ViewBag.Op" />
+
+            <!-- Primeira row: Latitude -->
+
+            <div class="row justify-content-between mb-4">
+                <div class="col-6">
+                    <label for="Latitude">Latitude</label>
+                    <input type="text" asp-for="Latitude" class="form-control" placeholder="00.000000" />
+                    <span asp-validation-for="Latitude" class="small text-danger"></span>
+                </div>
+
+                <div class="col-6">
+                    <label for="Longitude">Longitude</label>
+                    <input type="text" asp-for="Longitude" class="form-control" placeholder="000.000000" />
+                    <span asp-validation-for="Longitude" class="small text-danger"></span>
+                </div>
+            </div>
+
+            <!-- Botões -->
+
+            <div class="mt-5 d-flex justify-content-around">
+                <a class="btn btn-outline-secondary" href="javascript:quitForm()">Voltar</a>
+                <input type="submit" class="btn btn-success" value="Salvar" />
+            </div>
+
+        </form>
+    </div>
+</div>

@@ -1,0 +1,73 @@
+﻿@model List<OccurrenceViewModel>
+
+@{
+    ViewData["Title"] = "Ocorrências";
+}
+
+<script>
+    function deleteEntry(id) {
+        if (confirm("Deseja mesmo excluir este registro?"))
+            location.href = "/Occurrence/Delete?id=" + id;
+    }
+</script>
+
+
+<div class="d-flex justify-content-between mb-4 align-items-center">
+    <h1>Ocorrências</h1>
+    <div>
+        <a href="/Occurrence/Create" class="btn btn-outline-primary text-dark" role="button">
+            Registrar ocorrência
+        </a>
+    </div>
+</div>
+
+<div class="table-responsive">
+
+    <table class="table table-striped text-center table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>Ação</th>
+                <th>Id</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Data</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if(@Model != null) 
+            {
+            
+                @foreach(var row in @Model)
+                {
+            <tr>
+                <!-- Ação -->
+                <td>
+                    <a class="text-decoration-none" href="/Sensor/Edit?id=@row.Id">&#9998;</a>
+                    <a class="text-decoration-none" href="javascript:deleteEntry(@row.Id)">&#10060;</a>
+                </td>
+
+                <!-- ID -->
+                <td>@row.Id</td>
+
+                <!-- Latitude -->
+                <td>@row.Latitude.ToString("0.000000")</td>
+
+                <!-- Longitude -->
+                <td>@row.Longitude.ToString("0.000000")</td>
+
+                <!-- Data e hora da ocorrência -->
+                <td>@row.DateReference.ToShortDateString()</td>
+
+            </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan=6>Não há ocorrências cadastradas no momento.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
