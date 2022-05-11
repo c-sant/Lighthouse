@@ -1,6 +1,6 @@
 ﻿namespace Lighthouse.Models
 {
-    public class SensorViewModel : AbstractBaseViewModel
+    public class SensorViewModel : AbstractCrudViewModel
     {
         public double Longitude { get; set; }
         public double Latitude { get; set; }

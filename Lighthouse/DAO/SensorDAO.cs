@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Lighthouse.DAO
 {
-    public class SensorDAO : AbstractBaseDAO<SensorViewModel>
+    public class SensorDAO : AbstractCrudDAO<SensorViewModel>
     {
         protected override void SetTable()
         {

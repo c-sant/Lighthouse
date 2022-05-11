@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Lighthouse.Controllers
 {
-    public class SensorController : AbstractBaseController<SensorViewModel>
+    public class SensorController : AbstractCrudController<SensorViewModel>
     {
 
         public SensorController()

@@ -5,9 +5,9 @@ using System;
 
 namespace Lighthouse.Controllers
 {
-    public abstract class AbstractBaseController<T> : Controller where T : AbstractBaseViewModel
+    public abstract class AbstractCrudController<T> : Controller where T : AbstractCrudViewModel
     {
-        protected AbstractBaseDAO<T> DAO { get; set; }
+        protected AbstractCrudDAO<T> DAO { get; set; }
         protected bool GetNextId { get; set; }
         protected string IndexViewName { get; set; } = "Index";
         protected string FormViewName { get; set; } = "Form";

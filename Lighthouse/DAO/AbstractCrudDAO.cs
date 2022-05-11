@@ -7,9 +7,9 @@ using System.Linq;
 
 namespace Lighthouse.DAO
 {
-    public abstract class AbstractBaseDAO<T> where T : AbstractBaseViewModel
+    public abstract class AbstractCrudDAO<T> where T : AbstractCrudViewModel
     {
-        public AbstractBaseDAO()
+        public AbstractCrudDAO()
         {
             SetTable();
         }
