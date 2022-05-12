@@ -40,8 +40,8 @@ GO
 
 CREATE TABLE [dbo].[EnvironmentStatus] (
 	[Id] INT PRIMARY KEY IDENTITY NOT NULL,
-	[RainStatus] BIT NOT NULL,
-	[AirPressure] DECIMAL(8, 4) NULL,
+	[IsRaining] BIT NOT NULL,
+	[Temperature] DECIMAL(5, 4) NULL,
 	[HumidityLevel] DECIMAL(5, 2) NULL
 )
 GO
@@ -57,7 +57,8 @@ GO
 CREATE TABLE [dbo].[Occurrence] (
 	[Id] INT PRIMARY KEY IDENTITY NOT NULL,
 	[LocationId] INT FOREIGN KEY REFERENCES [Location](id) NOT NULL,
-	[DateReference] DATETIME NOT NULL
+	[DateReference] DATETIME NOT NULL,
+	[Details] VARCHAR(MAX) NULL
 )
 GO
 
@@ -193,7 +194,8 @@ GO
 CREATE PROC spInsert_Occurrence (
 	@longitude DECIMAL(9, 6),
 	@latitude DECIMAL(8, 6),
-	@dateReference DATETIME
+	@dateReference DATETIME,
+	@details VARCHAR(MAX)
 )
 AS BEGIN
 	DECLARE @locationIdTable TABLE (ID int)
@@ -209,11 +211,42 @@ AS BEGIN
 
 	INSERT INTO [Occurrence] 
 	OUTPUT inserted.Id INTO @ID
-	VALUES (@locationId, @dateReference)
+	VALUES (@locationId, @dateReference, @details)d
 
 	SELECT ID FROM @ID
 END
 GO
+
+CREATE PROC spUpdate_Occurrence (
+	@id INT,
+	@longitude DECIMAL(9, 6),
+	@latitude DECIMAL(8, 6),
+	@dateReference DATETIME,
+	@details VARCHAR(MAX)
+)
+AS BEGIN
+	DECLARE @locationId INT
+
+	SELECT @locationId = s.LocationId
+	FROM [Occurrence] s
+	WHERE s.Id = @id
+
+	UPDATE 
+		[Location]
+	SET 
+		[Latitude] = @latitude,
+		[Longitude] = @longitude
+	WHERE
+		Id = @locationId
+
+	UPDATE 
+		[Occurrence] 
+	SET
+		[DateReference] = @dateReference,
+		[Details] = @details
+	WHERE 
+		Id = @id
+END
 
 -- User
 

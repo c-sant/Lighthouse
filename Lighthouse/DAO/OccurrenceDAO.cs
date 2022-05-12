@@ -2,6 +2,7 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace Lighthouse.DAO
 {
@@ -19,7 +20,8 @@ namespace Lighthouse.DAO
                 Id = Convert.ToInt32(row["Id"]),
                 Longitude = Convert.ToDouble(row["Longitude"]),
                 Latitude = Convert.ToDouble(row["Latitude"]),
-                DateReference = Convert.ToDateTime(row["DateReference"])
+                DateReference = Convert.ToDateTime(row["DateReference"]),
+                Details = row["Details"].ToString()
             };
         }
 
@@ -30,8 +32,17 @@ namespace Lighthouse.DAO
                 new SqlParameter("Id", model.Id),
                 new SqlParameter("Longitude", model.Longitude),
                 new SqlParameter("Latitude", model.Latitude),
-                new SqlParameter("DateReference", model.DateReference)
+                new SqlParameter("DateReference", model.DateReference),
+                new SqlParameter("Details", model.Details)
             };
+        }
+
+        public override void Insert(OccurrenceViewModel model)
+        {
+            SqlParameter[] parameters = GetParameters(model).Skip(1).ToArray();
+
+            HelperDAO.ExecuteProcedure($"spInsert_{_tableName}", parameters);
+
         }
     }
 }

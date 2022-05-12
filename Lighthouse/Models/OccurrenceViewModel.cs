@@ -7,5 +7,6 @@ namespace Lighthouse.Models
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public DateTime DateReference { get; set; }
+        public string Details { get; set; }
     }
 }
