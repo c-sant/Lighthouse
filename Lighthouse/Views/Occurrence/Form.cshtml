@@ -25,9 +25,27 @@
             <input type="hidden" asp-for="Id" />
             <input type="hidden" name="op" value="@ViewBag.Op" />
 
-            <!-- Primeira row: Latitude -->
+            <!-- Primeira row: Data do ocorrido -->
 
-            <div class="row justify-content-between mb-4">
+            <div class="form-group d-flex justify-content-center">
+                <div class="col-4 row align-middle">
+                    <label for="DateReference" class="col-form-label mx-3">Data da ocorrência:</label>
+                    <div class="d-flex">
+                        <input type="datetime-local" asp-for="DateReference" class="form-control" min="1900-01-01T00:00" value="@DateTime.Now.ToString("s")" />
+                        <span asp-validation-for="DateReference" class="small text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label for="Details">Observações (opcional):</label>
+                <div>
+                    <input type="textarea" asp-for="Details" class="form-control" rows="3" placeholder="Possíveis causas observadas e consequências registradas..." />
+                    <span asp-validation-for="Details" class="small text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row justify-content-between my-4">
                 <div class="col-6">
                     <label for="Latitude">Latitude</label>
                     <input type="text" asp-for="Location.Latitude" class="form-control" placeholder="00.000000" />
