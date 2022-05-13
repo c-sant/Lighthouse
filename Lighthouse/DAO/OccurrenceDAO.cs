@@ -10,7 +10,7 @@ namespace Lighthouse.DAO
     {
         protected override void SetTable()
         {
-            _tableName = "Ocurrence";
+            _tableName = "Occurrence";
         }
 
         protected override OccurrenceViewModel RowToModel(DataRow row)

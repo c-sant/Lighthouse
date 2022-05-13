@@ -12,17 +12,17 @@ namespace Lighthouse.Controllers
             GetNextId = false;
             DAO = new OccurrenceDAO();
         }
-        protected override void Validate(char op, OccurrenceViewModel sensor)
+        protected override void Validate(char op, OccurrenceViewModel model)
         {
-            base.Validate(op, sensor);
+            base.Validate(op, model);
 
-            if (sensor.Latitude < -90 || sensor.Latitude > 90)
+            if (model.Latitude < -90 || model.Latitude > 90)
                 ModelState.AddModelError("Latitude", "Latidude fora de alcance: o valor deve estar entre -90 e 90.");
 
-            if (sensor.Longitude < -180 || sensor.Longitude > 180)
+            if (model.Longitude < -180 || model.Longitude > 180)
                 ModelState.AddModelError("Longitude", "Longitude fora de alcance: o valor deve estar entre -180 e 180.");
 
-            if (sensor.DateReference > DateTime.Now)
+            if (model.DateReference > DateTime.Now)
                 ModelState.AddModelError("DateReference", "A data da ocorrência não pode ser futura.");
         }
     }
