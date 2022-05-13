@@ -41,29 +41,29 @@
             
                 @foreach(var row in @Model)
                 {
-            <tr>
-                <!-- Ação -->
-                <td>
-                    <a class="text-decoration-none" href="/Sensor/Edit?id=@row.Id">&#9998;</a>
-                    <a class="text-decoration-none" href="javascript:deleteEntry(@row.Id)">&#10060;</a>
-                </td>
+                <tr>
+                    <!-- Ação -->
+                    <td>
+                        <a class="text-decoration-none" href="/Sensor/Edit?id=@row.Id">&#9998;</a>
+                        <a class="text-decoration-none" href="javascript:deleteEntry(@row.Id)">&#10060;</a>
+                    </td>
 
-                <!-- Broker ID -->
-                <td>@row.BrokerId</td>
+                    <!-- Broker ID -->
+                    <td>@row.BrokerId</td>
 
-                <!-- Mqtt Agent -->
-                <td>@row.MqttAgentId</td>
+                    <!-- Mqtt Agent -->
+                    <td>@row.MqttAgentId</td>
 
-                <!-- Latitude -->
-                <td>@row.Latitude.ToString("0.000000")</td>
+                    <!-- Latitude -->
+                    <td>@row.Location.Latitude.ToString("0.000000")</td>
 
-                <!-- Longitude -->
-                <td>@row.Longitude.ToString("0.000000")</td>
+                    <!-- Longitude -->
+                    <td>@row.Location.Longitude.ToString("0.000000")</td>
 
-                <!-- Raio de Atuação (KM) -->
-                <td>@row.Range.ToString("0.00")</td>
+                    <!-- Raio de Atuação (KM) -->
+                    <td>@row.Range.ToString("0.00")</td>
 
-            </tr>
+                </tr>
                 }
             }
             else

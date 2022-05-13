@@ -21,8 +21,11 @@ namespace Lighthouse.DAO
             return new SensorViewModel()
             {
                 Id = Convert.ToInt32(row["Id"]),
-                Longitude = Convert.ToDouble(row["Longitude"]),
-                Latitude = Convert.ToDouble(row["Latitude"]),
+                Location = new LocationViewModel()
+                {
+                    Longitude = Convert.ToDouble(row["Longitude"]),
+                    Latitude = Convert.ToDouble(row["Latitude"]), 
+                },
                 Range = Convert.ToDouble(row["RangeKM"])
             };
         }
@@ -32,8 +35,8 @@ namespace Lighthouse.DAO
             return new SqlParameter[]
             {
                 new SqlParameter("Id", model.Id),
-                new SqlParameter("Longitude", model.Longitude),
-                new SqlParameter("Latitude", model.Latitude),
+                new SqlParameter("Longitude", model.Location.Longitude),
+                new SqlParameter("Latitude", model.Location.Latitude),
                 new SqlParameter("Range", model.Range)
             };
         }
@@ -61,7 +64,7 @@ namespace Lighthouse.DAO
             int createdId = (int)queryResponse.Rows[0][0];
 
             var mqttAgentInteractor = new MqttAgentInteractor(GlobalConfig.HelixIp, GlobalConfig.MqttAgentPort);
-            mqttAgentInteractor.CreateSensor(createdId, new Point(sensor.Latitude, sensor.Longitude));
+            mqttAgentInteractor.CreateSensor(createdId, new Point(sensor.Location.Latitude, sensor.Location.Longitude));
             
             new BrokerInteractor(GlobalConfig.HelixIp, GlobalConfig.BrokerPort).RegisterSensor(sensor.Id);
         }

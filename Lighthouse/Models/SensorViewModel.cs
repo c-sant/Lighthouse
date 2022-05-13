@@ -2,8 +2,7 @@
 {
     public class SensorViewModel : AbstractCrudViewModel
     {
-        public double Longitude { get; set; }
-        public double Latitude { get; set; }
+        public LocationViewModel Location { get; set; }
         public double Range { get; set; }
 
         // Somente para visualização

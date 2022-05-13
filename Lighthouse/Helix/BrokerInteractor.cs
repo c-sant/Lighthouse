@@ -53,7 +53,7 @@ namespace Lighthouse.Helix
 
         private JObject BuildUpdatePayload(SensorViewModel sensor)
         {
-            string point = Helix.Utils.BuildLocationString(new Helpers.Point(sensor.Latitude, sensor.Longitude));
+            string point = Helix.Utils.BuildLocationString(new Helpers.Point(sensor.Location.Latitude, sensor.Location.Longitude));
 
             return new JObject()
             {

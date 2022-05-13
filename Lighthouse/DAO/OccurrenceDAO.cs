@@ -18,8 +18,11 @@ namespace Lighthouse.DAO
             return new OccurrenceViewModel()
             {
                 Id = Convert.ToInt32(row["Id"]),
-                Longitude = Convert.ToDouble(row["Longitude"]),
-                Latitude = Convert.ToDouble(row["Latitude"]),
+                Location = new LocationViewModel()
+                {
+                    Longitude = Convert.ToDouble(row["Longitude"]),
+                    Latitude = Convert.ToDouble(row["Latitude"]),
+                },
                 DateReference = Convert.ToDateTime(row["DateReference"]),
                 Details = row["Details"].ToString()
             };
@@ -30,8 +33,8 @@ namespace Lighthouse.DAO
             return new SqlParameter[]
             {
                 new SqlParameter("Id", model.Id),
-                new SqlParameter("Longitude", model.Longitude),
-                new SqlParameter("Latitude", model.Latitude),
+                new SqlParameter("Longitude", model.Location.Longitude),
+                new SqlParameter("Latitude", model.Location.Latitude),
                 new SqlParameter("DateReference", model.DateReference),
                 new SqlParameter("Details", model.Details)
             };
