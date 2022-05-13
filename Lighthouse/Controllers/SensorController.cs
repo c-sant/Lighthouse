@@ -15,17 +15,17 @@ namespace Lighthouse.Controllers
             DAO = new SensorDAO();
         }
 
-        protected override void Validate(char op, SensorViewModel sensor)
+        protected override void Validate(char op, SensorViewModel model)
         {
-            base.Validate(op, sensor);
+            base.Validate(op, model);
 
-            if (sensor.Latitude < -90 || sensor.Latitude > 90)
+            if (model.Latitude < -90 || model.Latitude > 90)
                 ModelState.AddModelError("Latitude", "Latidude fora de alcance: o valor deve estar entre -90 e 90.");
 
-            if (sensor.Longitude < -180 || sensor.Longitude > 180)
+            if (model.Longitude < -180 || model.Longitude > 180)
                 ModelState.AddModelError("Longitude", "Longitude fora de alcance: o valor deve estar entre -180 e 180.");
 
-            if (sensor.Range < 0)
+            if (model.Range < 0)
                 ModelState.AddModelError("Range", "O alcance não pode ser menor que zero.");
         }
     }
