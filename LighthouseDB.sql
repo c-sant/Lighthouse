@@ -7,7 +7,7 @@ GO
 USE LighthouseDB
 GO
 
--- tables
+-- tabelas
 
 CREATE TABLE [dbo].[Location] (
 	[Id] INT PRIMARY KEY IDENTITY NOT NULL,
@@ -29,11 +29,19 @@ CREATE TABLE [dbo].[Picture] (
 )
 GO
 
+CREATE TABLE [dbo].[Gender] (
+	[Id] INT PRIMARY KEY IDENTITY NOT NULL,
+	[Description] VARCHAR(MAX) NOT NULL
+)
+
 CREATE TABLE [dbo].[User] (
 	[Id] INT PRIMARY KEY IDENTITY NOT NULL,
-	[Name] VARCHAR(MAX) NOT NULL,
+	[Username] VARCHAR(MAX) NOT NULL,
+	[FirstName] VARCHAR(MAX) NOT NULL,
+	[LastName] VARCHAR(MAX) NOT NULL,
 	[Email] VARCHAR(MAX) NOT NULL,
 	[Password] VARCHAR(256) NOT NULL,
+	[GenderId] INT FOREIGN KEY REFERENCES [Gender](Id) NOT NULL,
 	[PictureId] INT FOREIGN KEY REFERENCES [Picture](Id) NOT NULL
 )
 GO
@@ -62,7 +70,7 @@ CREATE TABLE [dbo].[Occurrence] (
 )
 GO
 
--- general procedures
+-- procedures genéricas
 
 CREATE PROC spRead(@id INT, @tableName VARCHAR(MAX))
 AS BEGIN
@@ -118,21 +126,9 @@ AS BEGIN
 END
 GO
 
--- specific procedures
+-- procedures específicas
 
--- sensors
-
-CREATE PROC spListSensors
-AS BEGIN
-	SELECT 
-		s.Id AS [Id],
-		l.Latitude AS [Latitude],
-		l.Longitude AS [Longitude],
-		s.RangeKM AS [RangeKM]
-	FROM [Sensor] s
-	LEFT JOIN [Location] l ON s.LocationId = l.Id 
-END
-GO
+-- sensores
 
 CREATE PROC spInsert_Sensor(
 	@longitude DECIMAL(9, 6), 
@@ -189,7 +185,7 @@ AS BEGIN
 END
 GO
 
--- occurrences
+-- ocorrências
 
 CREATE PROC spInsert_Occurrence (
 	@longitude DECIMAL(9, 6),
@@ -211,7 +207,7 @@ AS BEGIN
 
 	INSERT INTO [Occurrence] 
 	OUTPUT inserted.Id INTO @ID
-	VALUES (@locationId, @dateReference, @details)d
+	VALUES (@locationId, @dateReference, @details)
 
 	SELECT ID FROM @ID
 END
@@ -247,13 +243,17 @@ AS BEGIN
 	WHERE 
 		Id = @id
 END
+GO
 
--- User
+-- usuários
 
 CREATE PROC spInsert_User (
-	@name VARCHAR(MAX),
+	@userName VARCHAR(MAX),
+	@firstName VARCHAR(MAX),
+	@lastName VARCHAR(MAX),
 	@email VARCHAR(MAX),
-	@password VARCHAR(256),
+	@password VARBINARY(256),
+	@genderId VARCHAR(1),
 	@picture VARBINARY(MAX)
 )
 AS BEGIN
@@ -265,15 +265,18 @@ AS BEGIN
 	SELECT @pictureId = [Id] FROM [Picture] WHERE [Content] = @picture
 
 	INSERT INTO [User]
-	VALUES(@name, @email, @password, @pictureId)
+	VALUES(@userName, @firstName, @lastName, @email, @password, @genderId, @pictureId)
 END
 GO
 
 CREATE PROC spUpdate_User (
 	@id INT,
-	@name VARCHAR(MAX),
+	@userName VARCHAR(MAX),
+	@firstName VARCHAR(MAX),
+	@lastName VARCHAR(MAX),
 	@email VARCHAR(MAX),
-	@password VARCHAR(256),
+	@password VARBINARY(256),
+	@genderId INT(1),
 	@picture VARBINARY(MAX)
 )
 AS BEGIN
@@ -287,9 +290,12 @@ AS BEGIN
 	UPDATE 
 		[User]
 	SET
-		[Name] = @name,
+		[Username] = @userName,
+		[FirstName] = @firstName,
+		[LastName] = @lastName,
 		[Email] = @email,
 		[Password] = @password,
+		[Gender] = @genderId,
 		[PictureId] = @pictureId
 	WHERE
 		[Id] = @id
@@ -298,9 +304,10 @@ GO
 
 -- triggers
 
+-- localização é deletada quando a entidade à qual ela está atrelada é deletada
+
 CREATE TRIGGER trgDelete_Sensor ON [Sensor]
-FOR DELETE
-AS BEGIN
+FOR DELETE AS BEGIN
 	DECLARE @locationId INT
 
 	SELECT @locationId = [LocationId] FROM deleted
@@ -310,8 +317,7 @@ END
 GO
 
 CREATE TRIGGER trgDelete_Occurrence ON [Occurrence]
-FOR DELETE
-AS BEGIN
+FOR DELETE AS BEGIN
 	DECLARE @locationId INT
 
 	SELECT @locationId = [LocationId] FROM deleted
@@ -319,3 +325,42 @@ AS BEGIN
 	DELETE [Location] WHERE [Id] = @locationId
 END
 GO
+
+-- não pode haver usernames repetidos
+
+CREATE TRIGGER trgInsert_User ON [User]
+FOR INSERT, UPDATE AS BEGIN
+	DECLARE @currentUserName VARCHAR(MAX)
+
+	SELECT @currentUserName = [Username] FROM inserted
+
+	IF (SELECT COUNT([Username]) FROM [User] WHERE [Username] = @currentUserName) > 1
+	BEGIN
+		PRINT 'Nome de usuário já está em uso'
+		ROLLBACK TRAN
+		RETURN
+	END
+END
+GO
+
+-- se ninguém estiver usando uma determinada foto (e ela não for a default), deleta essa foto
+
+CREATE TRIGGER trgDelete_User ON [User]
+FOR DELETE, UPDATE AS BEGIN
+	DECLARE @pictureId INT
+	
+	SELECT @pictureId = [PictureId] FROM deleted
+
+	IF NOT EXISTS(SELECT TOP(1) 1 FROM [User] WHERE [PictureId] = @pictureId) AND @pictureId <> 1
+	BEGIN
+		DELETE [Picture] WHERE [Id] = @pictureId
+	END
+END
+GO
+
+-- inserts
+
+-- gêneros
+
+INSERT INTO [Gender] VALUES
+('Masculino'), ('Feminino'), ('Outro')
