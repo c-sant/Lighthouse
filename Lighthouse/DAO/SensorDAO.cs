@@ -11,9 +11,10 @@ namespace Lighthouse.DAO
 {
     public class SensorDAO : AbstractCrudDAO<SensorViewModel>
     {
-        protected override void SetTable()
+        protected override void SetAttributes()
         {
             _tableName = "Sensor";
+            _hasLocation = true;
         }
 
         protected override SensorViewModel RowToModel(DataRow row)
@@ -39,21 +40,6 @@ namespace Lighthouse.DAO
                 new SqlParameter("Latitude", model.Location.Latitude),
                 new SqlParameter("Range", model.Range)
             };
-        }
-
-        public override List<SensorViewModel>? ReadAll()
-        {
-            DataTable table = HelperDAO.ExecuteQueryProcedure("spListSensors");
-
-            if (table.Rows.Count == 0)
-                return null;
-
-            var entries = new List<SensorViewModel>();
-
-            foreach (DataRow row in table.Rows)
-                entries.Add(RowToModel(row));
-
-            return entries;
         }
 
         public override void Insert(SensorViewModel sensor)

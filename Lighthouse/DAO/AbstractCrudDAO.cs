@@ -11,13 +11,14 @@ namespace Lighthouse.DAO
     {
         public AbstractCrudDAO()
         {
-            SetTable();
+            SetAttributes();
         }
 
         protected string _tableName;
+        protected bool _hasLocation;
         protected abstract SqlParameter[] GetParameters(T model);
         protected abstract T RowToModel(DataRow row);
-        protected abstract void SetTable();
+        protected abstract void SetAttributes();
 
         public virtual void Insert(T model)
         {
@@ -50,7 +51,9 @@ namespace Lighthouse.DAO
                 new SqlParameter("tableName", _tableName)
             };
 
-            DataTable table = HelperDAO.ExecuteQueryProcedure("spRead", parameters);
+            string procName = "spRead" + (_hasLocation ? "WithLocation" : "");
+
+            DataTable table = HelperDAO.ExecuteQueryProcedure(procName, parameters);
 
             if (table.Rows.Count == 0)
                 return null;
@@ -65,7 +68,9 @@ namespace Lighthouse.DAO
                 new SqlParameter("tableName", _tableName)
             };
 
-            DataTable table = HelperDAO.ExecuteQueryProcedure("spReadAll", parameters);
+            string procName = "spReadAll" + (_hasLocation ? "WithLocation" : "");
+
+            DataTable table = HelperDAO.ExecuteQueryProcedure(procName, parameters);
 
             if (table.Rows.Count == 0)
                 return null;

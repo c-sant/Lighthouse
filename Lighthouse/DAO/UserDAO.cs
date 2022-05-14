@@ -7,9 +7,10 @@ namespace Lighthouse.DAO
 {
     public class UserDAO : AbstractCrudDAO<UserViewModel>
     {
-        protected override void SetTable()
+        protected override void SetAttributes()
         {
             _tableName = "User";
+            _hasLocation = false;
         }
 
         protected override UserViewModel RowToModel(DataRow row)

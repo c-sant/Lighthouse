@@ -8,9 +8,10 @@ namespace Lighthouse.DAO
 {
     public class OccurrenceDAO : AbstractCrudDAO<OccurrenceViewModel>
     {
-        protected override void SetTable()
+        protected override void SetAttributes()
         {
             _tableName = "Occurrence";
+            _hasLocation = true;
         }
 
         protected override OccurrenceViewModel RowToModel(DataRow row)
