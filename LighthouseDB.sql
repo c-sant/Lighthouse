@@ -29,11 +29,6 @@ CREATE TABLE [dbo].[Picture] (
 )
 GO
 
-CREATE TABLE [dbo].[Gender] (
-	[Id] INT PRIMARY KEY IDENTITY NOT NULL,
-	[Description] VARCHAR(MAX) NOT NULL
-)
-
 CREATE TABLE [dbo].[User] (
 	[Id] INT PRIMARY KEY IDENTITY NOT NULL,
 	[Username] VARCHAR(MAX) NOT NULL,
@@ -41,7 +36,7 @@ CREATE TABLE [dbo].[User] (
 	[LastName] VARCHAR(MAX) NOT NULL,
 	[Email] VARCHAR(MAX) NOT NULL,
 	[Password] VARCHAR(256) NOT NULL,
-	[GenderId] INT FOREIGN KEY REFERENCES [Gender](Id) NOT NULL,
+	[Gender] INT NOT NULL,
 	[PictureId] INT FOREIGN KEY REFERENCES [Picture](Id) NOT NULL
 )
 GO
@@ -339,10 +334,3 @@ FOR DELETE, UPDATE AS BEGIN
 	END
 END
 GO
-
--- inserts
-
--- gêneros
-
-INSERT INTO [Gender] VALUES
-('Masculino'), ('Feminino'), ('Outro')
