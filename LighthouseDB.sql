@@ -80,16 +80,7 @@ GO
 
 CREATE PROC spReadWithLocation(@id INT, @tableName VARCHAR(MAX))
 AS BEGIN
-	EXEC (
-		'''
-		SELECT
-			t.*, 
-			l.[Latitude],
-			l.[Longitude]
-		FROM [''' + @tableName + ''']
-		LEFT JOIN [Location] l ON t.[LocationId] = l.[Id]
-		WHERE t.[Id] = ''' + @id
-	)
+	EXEC ('SELECT t.*, l.[Latitude], l.[Longitude] FROM [' + @tableName + '] t LEFT JOIN [Location] l ON t.[LocationId] = l.[Id] WHERE t.[Id] =' + @id)
 END
 GO
 
@@ -101,16 +92,7 @@ GO
 
 CREATE PROC spReadAllWithLocation(@tableName VARCHAR(MAX))
 AS BEGIN
-	EXEC (
-		'''
-		SELECT
-			t.*,
-			l.[Latitude],
-			l.[Longitude]
-		FROM [''' + @tableName + ''']
-		LEFT JOIN [Location] l ON t.[LocationId] = l.[Id]
-		'''
-	)
+	EXEC ('SELECT t.*, l.[Latitude], l.[Longitude] FROM [' + @tableName + '] t LEFT JOIN [Location] l ON t.[LocationId] = l.[Id]')
 END
 GO
 
