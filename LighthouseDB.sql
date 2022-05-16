@@ -43,7 +43,7 @@ GO
 
 CREATE TABLE [dbo].[EnvironmentStatus] (
 	[Id] INT PRIMARY KEY IDENTITY NOT NULL,
-	[IsRaining] BIT NOT NULL,
+	[RainPower] SMALLINT NOT NULL,
 	[Temperature] DECIMAL(5, 4) NULL,
 	[HumidityLevel] DECIMAL(5, 2) NULL
 )
@@ -332,5 +332,69 @@ FOR DELETE, UPDATE AS BEGIN
 	BEGIN
 		DELETE [Picture] WHERE [Id] = @pictureId
 	END
+END
+GO
+
+-- Mock de dados para environment variables
+/*
+CREATE TABLE [dbo].[EnvironmentStatus] (
+	[Id] INT PRIMARY KEY IDENTITY NOT NULL,
+	[RainPower] SMALLINT NOT NULL,
+	[Temperature] DECIMAL(5, 4) NULL,
+	[HumidityLevel] DECIMAL(5, 2) NULL
+)
+GO
+
+CREATE TABLE [dbo].[EnvironmentInteraction] (
+	[Id] INT PRIMARY KEY IDENTITY NOT NULL,
+	[SensorId] INT FOREIGN KEY REFERENCES [Sensor](Id) NOT NULL,
+	[StatusId] INT FOREIGN KEY REFERENCES [EnvironmentStatus](Id) NOT NULL,
+	[DateReference] DATETIME NOT NULL
+)
+
+CREATE TABLE [dbo].[Sensor] (
+	[Id] INT PRIMARY KEY IDENTITY NOT NULL,
+	[LocationId] INT FOREIGN KEY REFERENCES [Location](Id) NOT NULL,
+	[RangeKM] DECIMAL(5, 2) NOT NULL
+)
+GO
+*/
+
+CREATE PROC spInsert_EnvironmentInteraction( 
+	@sensorId DECIMAL(8, 6),
+	@rainPower SMALLINT,
+	@temperature DECIMAL(5, 2),
+	@humidityLevel DECIMAL (5, 2),
+	@dateReference DATETIME
+)
+AS BEGIN
+	-- Validação
+	IF (SELECT COUNT(1) FROM Sensor s WHERE s.Id = @sensorId) <> 1
+	BEGIN
+		PRINT 'SENSOR INEXISTENTE!'
+		ROLLBACK TRAN
+		RETURN
+	END
+
+	-- Criando Status Interaction
+	DECLARE @statsIdTable TABLE (ID int)
+	DECLARE @statsId INT
+
+	INSERT 
+	INTO EnvironmentStatus
+	OUTPUT inserted.Id INTO @statsIdTable
+	VALUES (@rainPower, @temperature, @humidityLevel)
+
+	SELECT @statsId = ID FROM @statsIdTable
+
+	-- Criando interação
+	DECLARE @interactionIdTable TABLE (ID int)
+
+	INSERT 
+	INTO EnvironmentInteraction
+	OUTPUT inserted.Id INTO @interactionIdTable
+	VALUES (@sensorId, @statsId, @dateReference)
+
+	SELECT ID FROM @interactionIdTable
 END
 GO
