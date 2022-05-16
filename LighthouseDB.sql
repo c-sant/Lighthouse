@@ -361,7 +361,7 @@ GO
 */
 
 CREATE PROC spInsert_EnvironmentInteraction( 
-	@sensorId DECIMAL(8, 6),
+	@sensorId INT,
 	@rainPower SMALLINT,
 	@temperature DECIMAL(5, 2),
 	@humidityLevel DECIMAL (5, 2),
@@ -382,6 +382,7 @@ AS BEGIN
 
 	INSERT 
 	INTO EnvironmentStatus
+	(RainPower, Temperature, HumidityLevel)
 	OUTPUT inserted.Id INTO @statsIdTable
 	VALUES (@rainPower, @temperature, @humidityLevel)
 
@@ -392,9 +393,54 @@ AS BEGIN
 
 	INSERT 
 	INTO EnvironmentInteraction
+	(SensorId, StatusId, DateReference)
 	OUTPUT inserted.Id INTO @interactionIdTable
 	VALUES (@sensorId, @statsId, @dateReference)
 
 	SELECT ID FROM @interactionIdTable
 END
 GO
+
+EXEC spInsert_EnvironmentInteraction 1, 2, 3, 4, '12-12-2002'
+
+-- NOTA: NÃO HÁ INTEGRAÇÃO COM O HELIX
+-- SOMENTE PARA TESTES INTERNOS
+
+ALTER PROC spInsertTestMock AS
+BEGIN
+	DECLARE @idSensor1 INT
+	DECLARE @idSensor1Table TABLE (ID int) 
+	INSERT INTO @idSensor1Table 
+	EXEC spInsert_Sensor -20, 10.2, 5
+	SELECT @idSensor1 = s.ID FROM @idSensor1Table s
+
+
+	DECLARE @idSensor2 INT
+	DECLARE @idSensor2Table TABLE (ID int) 
+	INSERT INTO @idSensor2Table 
+	EXEC spInsert_Sensor -20, 10.2, 5
+	SELECT @idSensor2 = s.ID FROM @idSensor2Table s
+	
+	EXEC spInsert_EnvironmentInteraction 5, 900, 9.3, 33, '2002-08-22 13:10:49'
+	EXEC spInsert_EnvironmentInteraction 5, 700, 8.9, 34, '2002-09-22 13:10:51'
+
+	EXEC spInsert_EnvironmentInteraction 5, 1024, 11.2, 30, '2002-07-22 13:10:50'
+	EXEC spInsert_EnvironmentInteraction 5, 400, 13.5, 39, '2002-10-22 13:10:52'
+	EXEC spInsert_EnvironmentInteraction 5, 100, 27.9, 45, '2002-11-22 13:10:53'
+
+	EXEC spInsert_EnvironmentInteraction 5, 1024, 20.2, 20, '2002-11-22 13:10:54'
+	EXEC spInsert_EnvironmentInteraction 5, 900, 22.4, 25, '2002-11-22 13:10:55'
+	EXEC spInsert_EnvironmentInteraction 5, 700, 23.5, 30, '2002-11-22 13:10:56'
+	EXEC spInsert_EnvironmentInteraction 5, 400, 26.3, 40, '2002-11-22 13:10:57'
+	EXEC spInsert_EnvironmentInteraction 5, 100, 30.2, 50, '2002-11-22 13:10:58'
+END
+
+EXEC spInsertTestMock
+
+DELETE FROM Sensor
+DELETE FROM EnvironmentInteraction
+DELETE FROM EnvironmentStatus
+
+SELECT * FROM Sensor
+SELECT * FROM EnvironmentStatus
+SELECT * FROM EnvironmentInteraction
