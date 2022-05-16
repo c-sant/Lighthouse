@@ -13,8 +13,10 @@
 
 </script>
 
-<div class="card mx-5">
-    <div class="card-header mx-2 text-center">
+<div class="d-flex justify-content-center">
+
+<div class="card mx-5" style="margin: 6em; width: 50%">
+    <div class="card-header text-center">
         <h3>@(ViewBag.Op == 'I'? "Registro de Ocorrência" : "Edição de Ocorrência" )</h3>
     </div>
 
@@ -27,21 +29,13 @@
 
             <!-- Primeira row: Data do ocorrido -->
 
-            <div class="form-group d-flex justify-content-center">
-                <div class="col-4 row align-middle">
+            <div class=" row form-group d-flex justify-content-center">
+                <div class="col-md-auto row align-middle">
                     <label for="DateReference" class="col-form-label mx-3">Data da ocorrência:</label>
                     <div class="d-flex">
                         <input type="datetime-local" asp-for="DateReference" class="form-control" min="1900-01-01T00:00" value="@DateTime.Now.ToString("s")" />
                         <span asp-validation-for="DateReference" class="small text-danger"></span>
                     </div>
-                </div>
-            </div>
-
-            <div>
-                <label for="Details">Observações (opcional):</label>
-                <div>
-                    <input type="textarea" asp-for="Details" class="form-control" rows="3" placeholder="Possíveis causas observadas e consequências registradas..." />
-                    <span asp-validation-for="Details" class="small text-danger"></span>
                 </div>
             </div>
 
@@ -59,13 +53,23 @@
                 </div>
             </div>
 
+            <div>
+                <label for="Details">Observações (opcional):</label>
+                <div>
+                    <textarea type="textarea" asp-for="Details" rows="5" class="form-control" placeholder="Possíveis causas observadas e consequências registradas..."></textarea>
+                    <span asp-validation-for="Details" class="small text-danger"></span>
+                </div>
+            </div>
+
+
             <!-- Botões -->
 
-            <div class="mt-5 d-flex justify-content-around">
-                <a class="btn btn-outline-secondary" href="javascript:quitForm()">Voltar</a>
+            <div class="mt-5 d-flex justify-content-end" style="gap: 3%">
+                <a class="btn btn-dark" href="javascript:quitForm()">Voltar</a>
                 <input type="submit" class="btn btn-success" value="Salvar" />
             </div>
 
         </form>
     </div>
+</div>
 </div>
