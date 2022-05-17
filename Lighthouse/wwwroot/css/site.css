@@ -82,7 +82,7 @@ header {
     background: #000000;
 }
 
-a {
+header a {
     text-decoration: none !important;
     color: snow !important;
 }
