@@ -44,7 +44,7 @@ GO
 CREATE TABLE [dbo].[EnvironmentStatus] (
 	[Id] INT PRIMARY KEY IDENTITY NOT NULL,
 	[RainPower] SMALLINT NOT NULL,
-	[Temperature] DECIMAL(5, 4) NULL,
+	[Temperature] DECIMAL(5, 2) NULL,
 	[HumidityLevel] DECIMAL(5, 2) NULL
 )
 GO
@@ -253,7 +253,7 @@ CREATE PROC spUpdate_User (
 	@lastName VARCHAR(MAX),
 	@email VARCHAR(MAX),
 	@password VARBINARY(256),
-	@genderId INT(1),
+	@genderId INT,
 	@picture VARBINARY(MAX)
 )
 AS BEGIN
@@ -335,31 +335,6 @@ FOR DELETE, UPDATE AS BEGIN
 END
 GO
 
--- Mock de dados para environment variables
-/*
-CREATE TABLE [dbo].[EnvironmentStatus] (
-	[Id] INT PRIMARY KEY IDENTITY NOT NULL,
-	[RainPower] SMALLINT NOT NULL,
-	[Temperature] DECIMAL(5, 4) NULL,
-	[HumidityLevel] DECIMAL(5, 2) NULL
-)
-GO
-
-CREATE TABLE [dbo].[EnvironmentInteraction] (
-	[Id] INT PRIMARY KEY IDENTITY NOT NULL,
-	[SensorId] INT FOREIGN KEY REFERENCES [Sensor](Id) NOT NULL,
-	[StatusId] INT FOREIGN KEY REFERENCES [EnvironmentStatus](Id) NOT NULL,
-	[DateReference] DATETIME NOT NULL
-)
-
-CREATE TABLE [dbo].[Sensor] (
-	[Id] INT PRIMARY KEY IDENTITY NOT NULL,
-	[LocationId] INT FOREIGN KEY REFERENCES [Location](Id) NOT NULL,
-	[RangeKM] DECIMAL(5, 2) NOT NULL
-)
-GO
-*/
-
 CREATE PROC spInsert_EnvironmentInteraction( 
 	@sensorId INT,
 	@rainPower SMALLINT,
@@ -372,7 +347,6 @@ AS BEGIN
 	IF (SELECT COUNT(1) FROM Sensor s WHERE s.Id = @sensorId) <> 1
 	BEGIN
 		PRINT 'SENSOR INEXISTENTE!'
-		ROLLBACK TRAN
 		RETURN
 	END
 
@@ -401,12 +375,12 @@ AS BEGIN
 END
 GO
 
-EXEC spInsert_EnvironmentInteraction 1, 2, 3, 4, '12-12-2002'
-
 -- NOTA: NÃO HÁ INTEGRAÇÃO COM O HELIX
 -- SOMENTE PARA TESTES INTERNOS
+-- NÃO USAR PARA PRODUÇÃO
 
-ALTER PROC spInsertTestMock AS
+GO
+CREATE PROC spInsertTestMock AS
 BEGIN
 	DECLARE @idSensor1 INT
 	DECLARE @idSensor1Table TABLE (ID int) 
@@ -421,26 +395,16 @@ BEGIN
 	EXEC spInsert_Sensor -20, 10.2, 5
 	SELECT @idSensor2 = s.ID FROM @idSensor2Table s
 	
-	EXEC spInsert_EnvironmentInteraction 5, 900, 9.3, 33, '2002-08-22 13:10:49'
-	EXEC spInsert_EnvironmentInteraction 5, 700, 8.9, 34, '2002-09-22 13:10:51'
+	EXEC spInsert_EnvironmentInteraction @idSensor1, 900, 9.3, 33, '2002-08-22 13:10:49'
+	EXEC spInsert_EnvironmentInteraction @idSensor1, 700, 8.9, 34, '2002-09-22 13:10:51'
+	EXEC spInsert_EnvironmentInteraction @idSensor1, 1024, 1.2, 30, '2002-07-22 13:10:50'
+	EXEC spInsert_EnvironmentInteraction @idSensor1, 400, 13.5, 39, '2002-10-22 13:10:52'
+	EXEC spInsert_EnvironmentInteraction @idSensor1, 100, 27.9, 45, '2002-11-22 13:10:53'
 
-	EXEC spInsert_EnvironmentInteraction 5, 1024, 11.2, 30, '2002-07-22 13:10:50'
-	EXEC spInsert_EnvironmentInteraction 5, 400, 13.5, 39, '2002-10-22 13:10:52'
-	EXEC spInsert_EnvironmentInteraction 5, 100, 27.9, 45, '2002-11-22 13:10:53'
-
-	EXEC spInsert_EnvironmentInteraction 5, 1024, 20.2, 20, '2002-11-22 13:10:54'
-	EXEC spInsert_EnvironmentInteraction 5, 900, 22.4, 25, '2002-11-22 13:10:55'
-	EXEC spInsert_EnvironmentInteraction 5, 700, 23.5, 30, '2002-11-22 13:10:56'
-	EXEC spInsert_EnvironmentInteraction 5, 400, 26.3, 40, '2002-11-22 13:10:57'
-	EXEC spInsert_EnvironmentInteraction 5, 100, 30.2, 50, '2002-11-22 13:10:58'
+	EXEC spInsert_EnvironmentInteraction @idSensor2, 1024, 20.2, 20, '2002-11-22 13:10:54'
+	EXEC spInsert_EnvironmentInteraction @idSensor2, 900, 22.4, 25, '2002-11-22 13:10:55'
+	EXEC spInsert_EnvironmentInteraction @idSensor2, 700, 23.5, 30, '2002-11-22 13:10:56'
+	EXEC spInsert_EnvironmentInteraction @idSensor2, 400, 26.3, 40, '2002-11-22 13:10:57'
+	EXEC spInsert_EnvironmentInteraction @idSensor2, 100, 30.2, 50, '2002-11-22 13:10:58'
 END
-
-EXEC spInsertTestMock
-
-DELETE FROM Sensor
-DELETE FROM EnvironmentInteraction
-DELETE FROM EnvironmentStatus
-
-SELECT * FROM Sensor
-SELECT * FROM EnvironmentStatus
-SELECT * FROM EnvironmentInteraction
+GO
