@@ -1,0 +1,121 @@
+﻿@model UserViewModel
+
+@{
+    ViewData["Title"] = "Conta";
+}
+
+<script>
+
+    function quitForm() {
+        if(confirm("Todas as alterações não salvas serão perdidas. Deseja mesmo sair?"))
+            location.href = "/Home/Index"
+    }
+
+    function showPicture() {
+        var reader = new FileReader();
+        reader.readAsDataURL(document.getElementById("PictureFile").files[0]);
+
+        reader.onload = function(readerEvent) {
+            document.getElementById("pic-preview").src = readerEvent.target.result;
+        }
+    }
+
+</script>
+
+<div class="card mx-5">
+    <div class="card-header mx-2 text-center">
+        <h3>@(ViewBag.Op == 'I'? "Cadastro" : "Dados da conta")</h3>
+    </div>
+
+    <div class="card-body justify-content-center mx-2">
+        <form asp-action="Save" method="post" enctype="multipart/form-data">
+
+            <!-- informações escondidas -->
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" name="op" value="@ViewBag.Op" />
+
+            <!-- Primeira fileira: nome completo -->
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="form-outline">
+                        <label for="FirstName">Primeiro Nome</label>
+                        <input type="text" asp-for="FirstName" class="form-control" />
+                        <span asp-validation-for="FirstName" class="small text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="form-outline">
+                        <label for="LastName">Sobrenome</label>
+                        <input type="text" asp-for="LastName" class="form-control" />
+                        <span asp-validation-for="LastName" class="small text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Segunda fileira: username e gênero -->
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+
+                    <div class="form-outline">
+                        <label for="UserName">Nome de usuário</label>
+                        <input type="text" asp-for="UserName" class="form-control" />
+                        <span asp-validation-for="UserName" class="small text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <label for="Gender">Gênero</label>
+                    <select asp-for="Gender" class="form-control">
+                        <option disabled selected value="0">Selecione um gênero...</option>
+                        <option value="1">Masculino</option>
+                        <option value="2">Feminino</option>
+                        <option value="3">Outro</option>
+                    </select>
+                    <span asp-validation-for="Gender" class="small text-danger"></span>
+                </div>
+
+            </div>
+
+            <!-- Terceira fileira: E-mail e senha -->
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="form-outline">
+                        <label for="Email">E-mail</label>
+                        <input type="email" asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="small text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="form-outline">
+                        <label for="Password">Senha</label>
+                        <input type="password" asp-for="RawPassword" class="form-control" />
+                        <span asp-validation-for="RawPassword" class="small text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Picture -->
+
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-4">
+                    <input type="file" id="PictureFile" asp-for="Picture.PictureFile" onchange="showPicture()" class="btn btn-secondary"/>
+                    <img id="pic-preview" src="data:image/jpeg;base64,@Model.Picture.Base64Picture" class="img-responsive" width=100 />
+                    <span asp-validation-for="Picture.PictureFile" class="small text-danger"></span>
+                </div>
+            </div>
+
+            <!-- Botões -->
+
+            <div class="mt-5 d-flex justify-content-around">
+                <a class="btn btn-outline-secondary" href="javascript:quitForm()">Voltar</a>
+                <input type="submit" class="btn btn-success" value="Salvar" />
+            </div>
+
+        </form>
+    </div>
+</div>

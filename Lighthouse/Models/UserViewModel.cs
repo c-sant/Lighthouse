@@ -1,10 +1,18 @@
-﻿namespace Lighthouse.Models
+﻿using Microsoft.AspNetCore.Http;
+using System;
+
+namespace Lighthouse.Models
 {
+    public enum Gender { Male, Female, Other }
     public class UserViewModel : AbstractCrudViewModel
     {
-        public string Name { get; set; }
+        public string UserName { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
         public string Email { get; set; }
-        public byte[] Password { get; set; }
-        public byte[] Picture { get; set; }
+        public Gender Gender { get; set; }
+        public string RawPassword { get; set; }
+        public byte[] EncryptedPassword { get; set; }
+        public PictureViewModel Picture { get; set; }
     }
 }

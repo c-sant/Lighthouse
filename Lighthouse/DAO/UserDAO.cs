@@ -15,12 +15,18 @@ namespace Lighthouse.DAO
 
         protected override UserViewModel RowToModel(DataRow row)
         {
+            int picId = Convert.ToInt32(row["PictureId"]);
+
             return new UserViewModel()
             {
                 Id = Convert.ToInt32(row["id"]),
-                Name = row["name"].ToString(),
-                Password = row["Password"] as byte[],
-                Picture = row["Picture"] != DBNull.Value ? (row["Picture"] as byte[]) : null
+                UserName = row["Username"].ToString(),
+                FirstName = row["FirstName"].ToString(),
+                LastName = row["LastName"].ToString(),
+                Email = row["email"].ToString(),
+                Gender = (Gender)Convert.ToInt32(row["Gender"]),
+                EncryptedPassword = row["Password"] as byte[],
+                Picture = new PictureDAO().Read(picId)
             };
         }
 
@@ -29,12 +35,14 @@ namespace Lighthouse.DAO
             return new SqlParameter[]
             {
                 new SqlParameter("Id", model.Id),
-                new SqlParameter("Name", model.Name),
-                new SqlParameter("Password", model.Password),
-                new SqlParameter("Picture", model.Picture ?? (object)DBNull.Value)
+                new SqlParameter("Username", model.UserName),
+                new SqlParameter("FirstName", model.FirstName),
+                new SqlParameter("LastName", model.LastName),
+                new SqlParameter("email", model.Email),
+                new SqlParameter("Gender", (int)model.Gender),
+                new SqlParameter("Password", model.EncryptedPassword),
+                new SqlParameter("Picture", model.Picture.BytePicture)
             };
         }
-
-
     }
 }
