@@ -55,8 +55,7 @@ namespace Lighthouse.Helix
                  'attributes': [
                    { 'object_id': 't', 'name': 'temperature', 'type': 'Float' },
                    { 'object_id': 'h', 'name': 'humidity', 'type': 'Float' },
-                   { 'object_id': 'a', 'name': 'airPressure', 'type': 'Float' },
-                   { 'object_id': 'r', 'name': 'isRaining', 'type': 'Boolean' }
+                   { 'object_id': 'r', 'name': 'rainPower', 'type': 'Integer' }
                  ],
                  'static_attributes': [
                         { 'object_id':'location', 'type': 'geo:point', 'name':'location' }
