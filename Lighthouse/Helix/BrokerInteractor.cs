@@ -77,7 +77,7 @@ namespace Lighthouse.Helix
                     'id': '" + Helix.Utils.BuildBrokerId(sensorId) + @"', 'type': 'Motion'
                   }
                 ],
-                'attrs': ['temperature', 'humidity', 'airPressure', 'isRaining']
+                'attrs': ['temperature', 'humidity', 'rainPower']
               },
               'provider': {
                 'http': {'url': 'http://" + GlobalConfig.HelixIp + @":4041'},
