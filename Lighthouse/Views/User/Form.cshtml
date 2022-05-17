@@ -22,8 +22,11 @@
 
 </script>
 
-<div class="card mx-5">
-    <div class="card-header mx-2 text-center">
+
+
+<div class="d-flex justify-content-center align-middle" style="margin: 5%">
+    <div class="card mx-5" style="width: 65%">
+    <div class="card-header text-center">
         <h3>@(ViewBag.Op == 'I'? "Cadastro" : "Dados da conta")</h3>
     </div>
 
@@ -38,17 +41,17 @@
 
             <div class="row">
                 <div class="col-md-6 mb-4">
-                    <div class="form-outline">
+                    <div class="input-container">
+                        <input type="text" asp-for="FirstName" required=""/>
                         <label for="FirstName">Primeiro Nome</label>
-                        <input type="text" asp-for="FirstName" class="form-control" />
                         <span asp-validation-for="FirstName" class="small text-danger"></span>
                     </div>
                 </div>
 
                 <div class="col-md-6 mb-4">
-                    <div class="form-outline">
+                    <div class="input-container">
+                        <input type="text" asp-for="LastName" required="" />
                         <label for="LastName">Sobrenome</label>
-                        <input type="text" asp-for="LastName" class="form-control" />
                         <span asp-validation-for="LastName" class="small text-danger"></span>
                     </div>
                 </div>
@@ -56,12 +59,12 @@
 
             <!-- Segunda fileira: username e gênero -->
 
-            <div class="row">
+            <div class="row d-flex align-items-md-end">
                 <div class="col-md-6 mb-4">
 
-                    <div class="form-outline">
+                    <div class="input-container">
+                        <input type="text" asp-for="UserName" required="" />
                         <label for="UserName">Nome de usuário</label>
-                        <input type="text" asp-for="UserName" class="form-control" />
                         <span asp-validation-for="UserName" class="small text-danger"></span>
                     </div>
                 </div>
@@ -83,17 +86,17 @@
 
             <div class="row">
                 <div class="col-md-6 mb-4">
-                    <div class="form-outline">
+                    <div class="input-container">
+                        <input type="text" asp-for="Email" required="" />
                         <label for="Email">E-mail</label>
-                        <input type="email" asp-for="Email" class="form-control" />
                         <span asp-validation-for="Email" class="small text-danger"></span>
                     </div>
                 </div>
 
                 <div class="col-md-6 mb-4">
-                    <div class="form-outline">
+                    <div class="input-container">
+                        <input type="password" asp-for="RawPassword" required="" />
                         <label for="Password">Senha</label>
-                        <input type="password" asp-for="RawPassword" class="form-control" />
                         <span asp-validation-for="RawPassword" class="small text-danger"></span>
                     </div>
                 </div>
@@ -102,7 +105,7 @@
             <!-- Profile Picture -->
 
             <div class="row justify-content-center">
-                <div class="col-md-6 mb-4">
+                <div class="col-md-7 mb-4">
                     <input type="file" id="PictureFile" asp-for="Picture.PictureFile" onchange="showPicture()" class="btn btn-secondary"/>
                     <img id="pic-preview" src="data:image/jpeg;base64,@Model.Picture.Base64Picture" class="img-responsive" width=100 />
                     <span asp-validation-for="Picture.PictureFile" class="small text-danger"></span>
@@ -110,12 +113,12 @@
             </div>
 
             <!-- Botões -->
-
-            <div class="mt-5 d-flex justify-content-around">
-                <a class="btn btn-outline-secondary" href="javascript:quitForm()">Voltar</a>
+            <div class="mt-5 d-flex justify-content-end" style="gap: 3%">
+                <a class="btn  btn-outline-secondary" href="javascript:quitForm()">Voltar</a>
                 <input type="submit" class="btn btn-success" value="Salvar" />
             </div>
 
         </form>
     </div>
+</div>
 </div>
