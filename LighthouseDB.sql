@@ -41,18 +41,27 @@ CREATE TABLE [dbo].[User] (
 )
 GO
 
-CREATE TABLE [dbo].[EnvironmentStatus] (
+CREATE TABLE [dbo].[Attribute] (
 	[Id] INT PRIMARY KEY IDENTITY NOT NULL,
-	[RainPower] SMALLINT NOT NULL,
-	[Temperature] DECIMAL(5, 2) NULL,
-	[HumidityLevel] DECIMAL(5, 2) NULL
+	[Name] VARCHAR(50) NOT NULL,
+	[Type] VARCHAR(50) NOT NULL,
 )
+GO
+
+INSERT INTO [Attribute]
+([Name], [Type])
+VALUES
+('temperature', 'Float'),
+('humidity', 'Float'),
+('rainPower', 'Integer')
+
 GO
 
 CREATE TABLE [dbo].[EnvironmentInteraction] (
 	[Id] INT PRIMARY KEY IDENTITY NOT NULL,
 	[SensorId] INT FOREIGN KEY REFERENCES [Sensor](Id) NOT NULL,
-	[StatusId] INT FOREIGN KEY REFERENCES [EnvironmentStatus](Id) NOT NULL,
+	[AttributeId] INT FOREIGN KEY REFERENCES [Attribute](Id) NOT NULL,
+	[Value] VARCHAR(MAX) NOT NULL,
 	[DateReference] DATETIME NOT NULL
 )
 GO
@@ -337,9 +346,8 @@ GO
 
 CREATE PROC spInsert_EnvironmentInteraction( 
 	@sensorId INT,
-	@rainPower SMALLINT,
-	@temperature DECIMAL(5, 2),
-	@humidityLevel DECIMAL (5, 2),
+	@type VARCHAR(50),
+	@value VARCHAR(MAX),
 	@dateReference DATETIME
 )
 AS BEGIN
@@ -350,28 +358,24 @@ AS BEGIN
 		RETURN
 	END
 
+	IF (SELECT COUNT(1) FROM Attribute a WHERE lower(a.[Name]) = lower(@type)) <> 1
+	BEGIN
+		PRINT 'TIPO INVÁLIDO!'
+	END
+
+	DECLARE @typeId INT
+	SELECT @typeId = a.Id FROM Attribute a WHERE lower(a.[Name]) = lower(@type)
+
 	-- Criando Status Interaction
-	DECLARE @statsIdTable TABLE (ID int)
-	DECLARE @statsId INT
+	DECLARE @interectionIdTable TABLE (ID int)
 
-	INSERT 
-	INTO EnvironmentStatus
-	(RainPower, Temperature, HumidityLevel)
-	OUTPUT inserted.Id INTO @statsIdTable
-	VALUES (@rainPower, @temperature, @humidityLevel)
+	INSERT EnvironmentInteraction
+	(SensorId, AttributeId, [Value], DateReference)
+	OUTPUT inserted.Id INTO @interectionIdTable
+	VALUES
+	(@sensorId, @typeId, @value, @dateReference)
 
-	SELECT @statsId = ID FROM @statsIdTable
-
-	-- Criando interação
-	DECLARE @interactionIdTable TABLE (ID int)
-
-	INSERT 
-	INTO EnvironmentInteraction
-	(SensorId, StatusId, DateReference)
-	OUTPUT inserted.Id INTO @interactionIdTable
-	VALUES (@sensorId, @statsId, @dateReference)
-
-	SELECT ID FROM @interactionIdTable
+	SELECT ID FROM @interectionIdTable
 END
 GO
 
@@ -395,16 +399,25 @@ BEGIN
 	EXEC spInsert_Sensor -20, 10.2, 5
 	SELECT @idSensor2 = s.ID FROM @idSensor2Table s
 	
-	EXEC spInsert_EnvironmentInteraction @idSensor1, 900, 9.3, 33, '2002-08-22 13:10:49'
-	EXEC spInsert_EnvironmentInteraction @idSensor1, 700, 8.9, 34, '2002-09-22 13:10:51'
-	EXEC spInsert_EnvironmentInteraction @idSensor1, 1024, 1.2, 30, '2002-07-22 13:10:50'
-	EXEC spInsert_EnvironmentInteraction @idSensor1, 400, 13.5, 39, '2002-10-22 13:10:52'
-	EXEC spInsert_EnvironmentInteraction @idSensor1, 100, 27.9, 45, '2002-11-22 13:10:53'
+	EXEC spInsert_EnvironmentInteraction @idSensor1, 'temperature', '9.3', '2002-08-22 13:10:49'
+	EXEC spInsert_EnvironmentInteraction @idSensor1, 'humidity', '8.9', '2002-09-22 13:10:51'
+	EXEC spInsert_EnvironmentInteraction @idSensor1, 'temperature', '1.2', '2002-07-22 13:10:50'
+	EXEC spInsert_EnvironmentInteraction @idSensor1, 'rainPowwer', '13.5', '2002-10-22 13:10:52'
+	EXEC spInsert_EnvironmentInteraction @idSensor1, 'humidity', '27.9', '2002-11-22 13:10:53'
+	EXEC spInsert_EnvironmentInteraction @idSensor1, 'rainPowwer', '24.9', '2002-11-22 13:10:57'
+	EXEC spInsert_EnvironmentInteraction @idSensor1, 'humidity', '23.9', '2002-11-22 13:10:56'
+	EXEC spInsert_EnvironmentInteraction @idSensor1, 'temperature', '22.9', '2002-11-22 13:10:55'
+	EXEC spInsert_EnvironmentInteraction @idSensor1, 'rainPowwer', '21.9', '2002-11-22 13:10:54'
 
-	EXEC spInsert_EnvironmentInteraction @idSensor2, 1024, 20.2, 20, '2002-11-22 13:10:54'
-	EXEC spInsert_EnvironmentInteraction @idSensor2, 900, 22.4, 25, '2002-11-22 13:10:55'
-	EXEC spInsert_EnvironmentInteraction @idSensor2, 700, 23.5, 30, '2002-11-22 13:10:56'
-	EXEC spInsert_EnvironmentInteraction @idSensor2, 400, 26.3, 40, '2002-11-22 13:10:57'
-	EXEC spInsert_EnvironmentInteraction @idSensor2, 100, 30.2, 50, '2002-11-22 13:10:58'
+	EXEC spInsert_EnvironmentInteraction @idSensor2, 'temperature', '9.3', '2002-08-22 13:10:49'
+	EXEC spInsert_EnvironmentInteraction @idSensor2, 'humidity', '8.9', '2002-09-22 13:10:51'
+	EXEC spInsert_EnvironmentInteraction @idSensor2, 'temperature', '1.2', '2002-07-22 13:10:50'
+	EXEC spInsert_EnvironmentInteraction @idSensor2, 'rainPowwer', '13.5', '2002-10-22 13:10:52'
+	EXEC spInsert_EnvironmentInteraction @idSensor2, 'humidity', '27.9', '2002-11-22 13:10:53'
+	EXEC spInsert_EnvironmentInteraction @idSensor2, 'rainPowwer', '24.9', '2002-11-22 13:10:57'
+	EXEC spInsert_EnvironmentInteraction @idSensor2, 'humidity', '23.9', '2002-11-22 13:10:56'
+	EXEC spInsert_EnvironmentInteraction @idSensor2, 'temperature', '22.9', '2002-11-22 13:10:55'
+	EXEC spInsert_EnvironmentInteraction @idSensor2, 'rainPowwer', '21.9', '2002-11-22 13:10:54'
+
 END
 GO
