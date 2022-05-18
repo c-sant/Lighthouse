@@ -65,7 +65,7 @@ CREATE TABLE [dbo].[Occurrence] (
 )
 GO
 
--- procedures genéricas
+-- procedures genï¿½ricas
 
 CREATE PROC spRead(@id INT, @tableName VARCHAR(MAX))
 AS BEGIN
@@ -103,7 +103,7 @@ AS BEGIN
 END
 GO
 
--- procedures específicas
+-- procedures especï¿½ficas
 
 -- sensores
 
@@ -162,7 +162,7 @@ AS BEGIN
 END
 GO
 
--- ocorrências
+-- ocorrï¿½ncias
 
 CREATE PROC spInsert_Occurrence (
 	@longitude DECIMAL(9, 6),
@@ -222,7 +222,7 @@ AS BEGIN
 END
 GO
 
--- usuários
+-- usuï¿½rios
 
 CREATE PROC spInsert_User (
 	@userName VARCHAR(MAX),
@@ -279,9 +279,20 @@ AS BEGIN
 END
 GO
 
+-- login
+
+CREATE PROC spValidateLogin(@username VARCHAR(MAX), @password VARBINARY(MAX))
+AS BEGIN
+	IF EXISTS(SELECT [Username], [Password] FROM [User] WHERE [Username] = @username AND [Password] = @password)
+		SELECT 1
+	ELSE
+		SELECT 0
+END
+GO
+
 -- triggers
 
--- localização é deletada quando a entidade à qual ela está atrelada é deletada
+-- localizaï¿½ï¿½o ï¿½ deletada quando a entidade ï¿½ qual ela estï¿½ atrelada ï¿½ deletada
 
 CREATE TRIGGER trgDelete_Sensor ON [Sensor]
 FOR DELETE AS BEGIN
@@ -303,7 +314,7 @@ FOR DELETE AS BEGIN
 END
 GO
 
--- não pode haver usernames repetidos
+-- nï¿½o pode haver usernames repetidos
 
 CREATE TRIGGER trgInsert_User ON [User]
 FOR INSERT, UPDATE AS BEGIN
@@ -313,14 +324,14 @@ FOR INSERT, UPDATE AS BEGIN
 
 	IF (SELECT COUNT([Username]) FROM [User] WHERE [Username] = @currentUserName) > 1
 	BEGIN
-		PRINT 'Nome de usuário já está em uso'
+		PRINT 'Nome de usuï¿½rio jï¿½ estï¿½ em uso'
 		ROLLBACK TRAN
 		RETURN
 	END
 END
 GO
 
--- se ninguém estiver usando uma determinada foto (e ela não for a default), deleta essa foto
+-- se ninguï¿½m estiver usando uma determinada foto (e ela nï¿½o for a default), deleta essa foto
 
 CREATE TRIGGER trgDelete_User ON [User]
 FOR DELETE, UPDATE AS BEGIN
@@ -343,7 +354,7 @@ CREATE PROC spInsert_EnvironmentInteraction(
 	@dateReference DATETIME
 )
 AS BEGIN
-	-- Validação
+	-- Validaï¿½ï¿½o
 	IF (SELECT COUNT(1) FROM Sensor s WHERE s.Id = @sensorId) <> 1
 	BEGIN
 		PRINT 'SENSOR INEXISTENTE!'
@@ -362,7 +373,7 @@ AS BEGIN
 
 	SELECT @statsId = ID FROM @statsIdTable
 
-	-- Criando interação
+	-- Criando interaï¿½ï¿½o
 	DECLARE @interactionIdTable TABLE (ID int)
 
 	INSERT 
@@ -375,9 +386,12 @@ AS BEGIN
 END
 GO
 
--- NOTA: NÃO HÁ INTEGRAÇÃO COM O HELIX
+EXEC spInsert_EnvironmentInteraction 1, 2, 3, 4, '12-12-2002'
+GO
+
+-- NOTA: Nï¿½O Hï¿½ INTEGRAï¿½ï¿½O COM O HELIX
 -- SOMENTE PARA TESTES INTERNOS
--- NÃO USAR PARA PRODUÇÃO
+-- Nï¿½O USAR PARA PRODUï¿½ï¿½O
 
 GO
 CREATE PROC spInsertTestMock AS
