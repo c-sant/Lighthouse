@@ -44,5 +44,21 @@ namespace Lighthouse.DAO
                 new SqlParameter("Picture", model.Picture.BytePicture)
             };
         }
+
+        public bool ValidateLogin(UserViewModel model)
+        {
+            SqlParameter[] parameters =
+            {
+                new SqlParameter("UserName", model.UserName),
+                new SqlParameter("Password", model.EncryptedPassword)
+            };
+
+            DataTable result = HelperDAO.ExecuteQueryProcedure("spValidateLogin", parameters);
+
+            if (result.Rows.Count == 0)
+                return false;
+
+            return Convert.ToBoolean(result.Rows[0][0]);
+        }
     }
 }
