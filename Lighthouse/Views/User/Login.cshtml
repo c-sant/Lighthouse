@@ -1,0 +1,44 @@
+﻿@model UserViewModel
+
+@{
+    ViewData["Title"] = "Entrar";
+}
+
+<div class="container d-flex justify-content-center">
+    <div class="card" style="margin: 2em 6em; width: 50%">
+        <div class="card-header text-center">
+            <h2>Entrar</h2>
+        </div>
+
+        <div class="card-body" style="margin: 2em">
+            <form asp-action="SubmitLogin">
+                
+                <!-- informações escondidas -->
+                <input type="hidden" name="op" value="@ViewBag.Op" />
+
+                <!-- nome de usuário -->
+                <div class="form-group">
+                    <label for="UserName">Nome de usuário</label>
+                    <input type="text" asp-for="UserName" class="form-control" />
+                    <span asp-validation-for="UserName" class="small text-danger"></span>
+                </div>
+
+                <!-- senha -->
+                <div class="form-group">
+                    <label for="RawPassword">Senha</label>
+                    <input type="password" asp-for="RawPassword" class="form-control" />
+                    <span asp-validation-for="RawPassword" class="small text-danger"></span>
+                </div>
+
+                <!-- botões -->
+                <div class="form-group d-flex justify-content-center">
+                    <input type="submit" class="btn btn-success" value="Entrar" />
+                </div>
+
+                <span class="form-group d-flex justify-content-center">
+                    <a class="text-decoration-none" href="/User/Create">Cadastrar novo usuário</a>
+                </span>
+            </form>
+        </div>
+    </div>
+</div>

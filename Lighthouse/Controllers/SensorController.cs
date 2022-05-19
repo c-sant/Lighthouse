@@ -13,6 +13,7 @@ namespace Lighthouse.Controllers
         {
             GetNextId = false;
             DAO = new SensorDAO();
+            RequiresLogin = true;
         }
 
         protected override void Validate(char op, SensorViewModel model)

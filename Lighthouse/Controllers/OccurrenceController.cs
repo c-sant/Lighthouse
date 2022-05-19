@@ -11,6 +11,7 @@ namespace Lighthouse.Controllers
         {
             GetNextId = false;
             DAO = new OccurrenceDAO();
+            RequiresLogin = true;
         }
         protected override void Validate(char op, OccurrenceViewModel model)
         {

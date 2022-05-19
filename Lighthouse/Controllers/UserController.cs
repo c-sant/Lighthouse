@@ -3,7 +3,9 @@ using Lighthouse.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -55,12 +57,12 @@ namespace Lighthouse.Controllers
                 }
                 else
                 {
-                    model.EncryptedPassword = EncryptPassword(model.RawPassword);
-
                     if (op == 'I')
                         DAO.Insert(model);
                     else
                     {
+                        model.EncryptedPassword = EncryptPassword(model.RawPassword);
+
                         if (model.Picture.PictureFile == null)
                             model.Picture.BytePicture = DAO.Read(model.Id).Picture.BytePicture;
 
@@ -76,27 +78,94 @@ namespace Lighthouse.Controllers
             }
         }
 
+        public IActionResult Login()
+        {
+            try
+            {
+                var model = new UserViewModel();
+                ViewBag.Op = 'L';
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                return View("Error", new ErrorViewModel(ex.ToString()));
+            }
+        }
+
+        public IActionResult SubmitLogin(char op, UserViewModel model)
+        {
+            try
+            {
+
+                Validate(op, model);
+
+                if (!ModelState.IsValid)
+                {
+                    ViewBag.Op = op;
+                    return View("Login", model);
+                }
+
+                HttpContext.Session.SetString("logged", "true");
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                return View("Error", new ErrorViewModel(ex.ToString()));
+            }
+        }
+
+        public IActionResult LogOff()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Home");
+        }
+
         protected override void Validate(char op, UserViewModel model)
         {
+            // todos os casos
+
             base.Validate(op, model);
 
             if (string.IsNullOrEmpty(model.UserName))
-                ModelState.AddModelError("UserName", "É obrigatório definir um nome de usuário.");
-
-            if (string.IsNullOrEmpty(model.FirstName))
-                ModelState.AddModelError("FirstName", "É obrigatório inserir seu primeiro nome.");
-
-            if (string.IsNullOrEmpty(model.LastName))
-                ModelState.AddModelError("LastName", "É obrigatório inserir seu sobrenome.");
+                ModelState.AddModelError("UserName", "É obrigatório inserir o nome de usuário.");
 
             if (string.IsNullOrEmpty(model.RawPassword))
-                ModelState.AddModelError("RawPassword", "É obrigatório definir uma senha.");
+                ModelState.AddModelError("RawPassword", "É obrigatório inserir uma senha.");
 
-            if (string.IsNullOrEmpty(model.Email))
-                ModelState.AddModelError("Email", "É obrigatório inserir seu e-mail.");
+            model.EncryptedPassword = model.RawPassword != null ? EncryptPassword(model.RawPassword) : null;
 
-            if ((int)model.Gender < 0)
-                ModelState.AddModelError("Gender", "É obrigatório selecionar um gênero.");
+            if (op != 'L') // inserção e atualização
+            {
+                if (string.IsNullOrEmpty(model.FirstName))
+                    ModelState.AddModelError("FirstName", "É obrigatório inserir seu primeiro nome.");
+
+                if (string.IsNullOrEmpty(model.LastName))
+                    ModelState.AddModelError("LastName", "É obrigatório inserir seu sobrenome.");
+
+                if (string.IsNullOrEmpty(model.Email))
+                    ModelState.AddModelError("Email", "É obrigatório inserir seu e-mail.");
+
+                if ((int)model.Gender < 0)
+                    ModelState.AddModelError("Gender", "É obrigatório selecionar um gênero.");
+            }
+            else // login
+            {
+                List<UserViewModel> users = DAO.ReadAll();
+
+                List<string> usernames = null;
+
+                if (users != null)
+                    usernames = users.Select(user => user.UserName).ToList();
+
+                if (usernames == null || !usernames.Contains(model.UserName))
+                    ModelState.AddModelError("UserName", "Nome de usuário não encontrado.");
+
+                else if (!(DAO as UserDAO).ValidateLogin(model))
+                    ModelState.AddModelError("Password", "Senha inválida.");
+            }
+
         }
 
         private byte[] EncryptPassword(string rawPassword)
