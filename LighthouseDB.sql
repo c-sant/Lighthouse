@@ -390,7 +390,6 @@ AS BEGIN
 END
 GO
 
-EXEC spInsert_EnvironmentInteraction 1, 2, 3, 4, '12-12-2002'
 GO
 
 -- NOTA: N�O H� INTEGRA��O COM O HELIX
