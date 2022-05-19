@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using LighthouseAPI.DAO.MongoDB;
+using LighthouseAPI.Views.MongoDB;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +24,12 @@ namespace LighthouseAPI.Controllers
         [HttpGet("MongoToSqlServer")]
         public IActionResult Get()
         {
-            return new JsonResult(new { Works = true });
+            IMongoDatabase db = DBConnection.GetConnection();
+            string sensorId = "urn:ngsi-ld:Motion:4";
+            IMongoCollection<InteractionViewModel> colInteraction = db.GetCollection<InteractionViewModel>($"sth_/_{sensorId}_Motion");
+            var documents = colInteraction.Find(_ => true).ToListAsync().Result;
+            
+            return new JsonResult(new { documents });
         }
     }
 }
