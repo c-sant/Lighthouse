@@ -241,7 +241,7 @@ CREATE PROC spInsert_User (
 	@lastName VARCHAR(MAX),
 	@email VARCHAR(MAX),
 	@password VARBINARY(256),
-	@genderId VARCHAR(1),
+	@gender VARCHAR(1),
 	@picture VARBINARY(MAX)
 )
 AS BEGIN
@@ -253,7 +253,7 @@ AS BEGIN
 	SELECT @pictureId = [Id] FROM [Picture] WHERE [Content] = @picture
 
 	INSERT INTO [User]
-	VALUES(@userName, @firstName, @lastName, @email, @password, @genderId, @pictureId)
+	VALUES(@userName, @firstName, @lastName, @email, @password, @gender, @pictureId)
 END
 GO
 
@@ -264,7 +264,7 @@ CREATE PROC spUpdate_User (
 	@lastName VARCHAR(MAX),
 	@email VARCHAR(MAX),
 	@password VARBINARY(256),
-	@genderId INT,
+	@gender INT,
 	@picture VARBINARY(MAX)
 )
 AS BEGIN
@@ -283,7 +283,7 @@ AS BEGIN
 		[LastName] = @lastName,
 		[Email] = @email,
 		[Password] = @password,
-		[Gender] = @genderId,
+		[Gender] = @gender,
 		[PictureId] = @pictureId
 	WHERE
 		[Id] = @id
@@ -437,3 +437,5 @@ BEGIN
 
 END
 GO
+
+INSERT INTO [User]

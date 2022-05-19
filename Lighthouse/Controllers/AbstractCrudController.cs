@@ -6,11 +6,10 @@ using System;
 
 namespace Lighthouse.Controllers
 {
-    public abstract class AbstractCrudController<T> : Controller where T : AbstractCrudViewModel
+    public abstract class AbstractCrudController<T> : LoggableController where T : AbstractCrudViewModel
     {
         protected AbstractCrudDAO<T> DAO { get; set; }
         protected bool GetNextId { get; set; }
-        protected bool RequiresLogin { get; set; } = false;
         protected string IndexViewName { get; set; } = "Index";
         protected string FormViewName { get; set; } = "Form";
 
@@ -123,21 +122,6 @@ namespace Lighthouse.Controllers
             {
                 return View("Error", new ErrorViewModel(ex.ToString()));
             }
-        }
-
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            if (RequiresLogin && !HelperController.IsLogged(HttpContext.Session))
-            {
-                ViewBag.IsLogged = false;
-                context.Result = RedirectToAction("Login", "User");
-            }
-            else
-            {
-                ViewBag.IsLogged = true;
-                base.OnActionExecuting(context);
-            }
-
         }
     }
 }

@@ -106,7 +106,7 @@ namespace Lighthouse.Controllers
                     return View("Login", model);
                 }
 
-                HttpContext.Session.SetString("logged", "true");
+                HttpContext.Session.SetString("Logged", "true");
 
                 return RedirectToAction("Index", "Home");
             }
