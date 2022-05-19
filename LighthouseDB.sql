@@ -57,9 +57,11 @@ VALUES
 
 GO
 
+--drop database LighthouseDB
+
 CREATE TABLE [dbo].[EnvironmentInteraction] (
 	[Id] INT PRIMARY KEY IDENTITY NOT NULL,
-	[SensorId] INT FOREIGN KEY REFERENCES [Sensor](Id) NOT NULL,
+	[SensorId] INT FOREIGN KEY REFERENCES [Sensor](Id) ON DELETE CASCADE NOT NULL,
 	[AttributeId] INT FOREIGN KEY REFERENCES [Attribute](Id) NOT NULL,
 	[Value] VARCHAR(MAX) NOT NULL,
 	[DateReference] DATETIME NOT NULL
@@ -354,6 +356,7 @@ FOR DELETE, UPDATE AS BEGIN
 	END
 END
 GO
+
 
 CREATE PROC spInsert_EnvironmentInteraction( 
 	@sensorId INT,
