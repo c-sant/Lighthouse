@@ -69,5 +69,22 @@ namespace Lighthouse.DAO
 
             base.Update(sensor);
         }
+
+        public List<SensorViewModel> SearchSensors(Double latitude, Double longitude)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+                new SqlParameter("latitude", latitude),
+                new SqlParameter("longitude", longitude)
+            };
+            List<SensorViewModel> list = new List<SensorViewModel>();
+            DataTable entries = HelperDAO.ExecuteQueryProcedure("spSearchSensors", parameters);
+
+            foreach (DataRow row in entries.Rows)
+                list.Add(RowToModel(row));
+
+            return list;
+
+        }
     }
 }

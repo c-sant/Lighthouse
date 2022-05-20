@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Lighthouse.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : LoggableController
     {
         private readonly ILogger<HomeController> _logger;
 

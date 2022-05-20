@@ -29,5 +29,30 @@ namespace Lighthouse.Controllers
             if (model.Range < 0)
                 ModelState.AddModelError("Range", "O alcance não pode ser menor que zero.");
         }
+
+        public IActionResult ObtemDadosConsultaAvancada(string latitude,
+                                                        string longitude)
+        {
+            try
+            {
+                
+                if (string.IsNullOrEmpty(latitude))
+                    latitude = "0";
+                if (string.IsNullOrEmpty(longitude))
+                    longitude = "0";
+                List<SensorViewModel> SensorList = new List<SensorViewModel>();
+                if (latitude == "0" && longitude == "0")
+                    SensorList = DAO.ReadAll();
+                else
+                    SensorList = (DAO as SensorDAO).SearchSensors(Convert.ToDouble(latitude), Convert.ToDouble(longitude));
+
+
+                return PartialView("pvGridSensor", SensorList);
+            }
+            catch (Exception erro)
+            {
+                return Json(new { erro = true, msg = erro.Message });
+            }
+        }
     }
 }

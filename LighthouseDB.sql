@@ -438,4 +438,16 @@ BEGIN
 END
 GO
 
-INSERT INTO [User]
+create procedure [dbo].[spSearchSensors]
+(@latitude DECIMAL(8,6),
+@longitude DECIMAL(9,6))
+as
+begin
+
+ select Sensor.* ,Location.Longitude, Location.Latitude
+from Sensor
+LEFT JOIN Location on Sensor.LocationId = Location.Id
+where 
+ Location.Longitude between (@longitude - 10) and (@longitude + 10) OR
+ Location.Latitude between (@latitude - 10) and (@latitude + 10); 
+end

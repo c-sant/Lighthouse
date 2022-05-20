@@ -1,50 +1,6 @@
 ﻿@model List<SensorViewModel>
 
-@{
-    ViewData["Title"] = "Sensores";
-}
-
-<script>
-    function deleteEntry(id) {
-        if (confirm("Deseja mesmo excluir este registro?"))
-            location.href = "/Sensor/Delete?id=" + id;
-    }
-</script>
-
-
-<div class="d-flex justify-content-between mb-4 align-items-center m-3">
-    <h1 style="margin-left: 12%">Sensores</h1>
-    <div style="margin-right: 12%">
-        <a href="/Sensor/Create" class="btn btn-outline-primary text-dark" role="button">
-            Cadastrar sensor
-        </a>
-    </div>
-</div>
-<div class=" d-flex justify-content-center">
-<fieldset id="areaFiltro" class="form-group" style="width:75%">
-     <legend>Consulta avançada de Sensores</legend>
-     <div class="row">
-     
-        <div class="col-lg-3">
-     Período <br />
-         <input type="text" id="latitude" class="form-control" placeholder="latitude"/>
-     </div>
-        <div class="col-lg-3">
-     <br />
-        <input type="text" id="longitude" class="form-control" placeholder="longitude"/>
-     </div>
-        <div class="col-lg-2">
-     <br />
-        <input type="button" id="btnFiltro" class="btn btn-success" value="Aplicar"
-            onclick="aplicaFiltroConsultaAvancada()" />
-     </div>
-    </div>
-</fieldset>
-</div>
-<div class=" d-flex justify-content-center">
-    
-<div id="resultadoConsulta"  class="table-responsive"  style="width: 75%">
-    <table class="table table-striped text-center table-bordered">
+<table class="table table-striped text-center table-bordered">
         <thead class="thead-dark">
             <tr>
                 <th>
@@ -97,7 +53,3 @@
             }
         </tbody>
     </table>
-
-    
-</div>
-</div>
