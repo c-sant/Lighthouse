@@ -28,6 +28,7 @@ namespace Lighthouse.Controllers
                 {
                     Picture = new PictureViewModel()
                 };
+                model.Picture.BytePicture = ConvertImageToByte(@"wwwroot\images\defaultprofile.png");
                 FillViewData('I', model);
 
                 return View(FormViewName, model);
@@ -42,10 +43,15 @@ namespace Lighthouse.Controllers
         {
             try
             {
-                model.Gender--;
-
-                if (model.Picture.PictureFile != null)
+                if (model.Picture != null && model.Picture.PictureFile != null)
                     model.Picture.BytePicture = ConvertImageToByte(model.Picture.PictureFile);
+                else
+                {
+                    if (model.Picture == null)
+                        model.Picture = new PictureViewModel();
+
+                    model.Picture.BytePicture = ConvertImageToByte(@"wwwroot\images\defaultprofile.png");
+                }
 
                 Validate(op, model);
 
@@ -147,7 +153,7 @@ namespace Lighthouse.Controllers
                 if (string.IsNullOrEmpty(model.Email))
                     ModelState.AddModelError("Email", "É obrigatório inserir seu e-mail.");
 
-                if ((int)model.Gender < 0)
+                if ((int)model.Gender < 1)
                     ModelState.AddModelError("Gender", "É obrigatório selecionar um gênero.");
             }
             else // login
@@ -185,6 +191,11 @@ namespace Lighthouse.Controllers
             file.CopyTo(ms);
 
             return ms.ToArray();
+        }
+
+        private byte[] ConvertImageToByte(string imagePath)
+        {
+            return System.IO.File.ReadAllBytes(imagePath);
         }
     }
 }

@@ -106,7 +106,7 @@
 
             <div class="row justify-content-center">
                 <div class="col-md-7 mb-4">
-                    <input type="file" id="PictureFile" asp-for="Picture.PictureFile" onchange="showPicture()" class="btn btn-secondary"/>
+                    <input type="file" id="PictureFile" asp-for="Picture.PictureFile" onchange="showPicture()" class="btn btn-secondary" />
                     <img id="pic-preview" src="data:image/jpeg;base64,@Model.Picture.Base64Picture" class="img-responsive" width=100 />
                     <span asp-validation-for="Picture.PictureFile" class="small text-danger"></span>
                 </div>

@@ -3,7 +3,7 @@ using System;
 
 namespace Lighthouse.Models
 {
-    public enum Gender { Male, Female, Other }
+    public enum Gender { Male = 1, Female, Other }
     public class UserViewModel : AbstractCrudViewModel
     {
         public string UserName { get; set; }
