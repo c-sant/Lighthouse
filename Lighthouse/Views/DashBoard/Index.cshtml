@@ -1,0 +1,66 @@
+﻿@model List<SensorViewModel>
+
+<div class="body-custom" style="height: 100%">
+    @if(@Model != null) 
+            {
+            
+                @foreach(var row in @Model)
+                {
+                <div class="d-flex justify-content-center " style="height: 30em; color: black;">
+                    <div id="chart_div_@row.MqttAgentId" style="width: 60%; height: 80%; background-color: white; margin-top: 3%;">
+
+                    </div>
+                </div>
+    }
+            }
+            else
+            {
+                <tr>
+                    <td colspan=6>Não há Dashboards para serem exibidos no momento.</td>
+                </tr>
+            }
+</div>
+
+<script type="text/javascript">
+    
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+      
+        function getSensors() {
+            var sensor = {}
+        $.ajax({
+            url: "/DashBoard/GetSensors",
+            success: function (dado) {
+                sensor = dado.dados;
+                return sensor;
+            },
+        });
+
+        }
+      function drawChart() {
+        
+        var data = google.visualization.arrayToDataTable([
+          ['Data/Hora', 'Temperatura', 'Umidade'],
+          ['10:00',  25.5,      40],
+          ['10:01',   25.8,      45],
+          ['10:02',   25.4,       50],
+          ['10:03',   25.9,      48]
+        ]);
+
+        var options = {
+          title: 'Sensor',
+          hAxis: {title: 'Histórico do Sensor',  titleTextStyle: {color: '#333'}},
+          vAxis: {minValue: 0}
+        };
+
+        var sensors = getSensors();
+        console.log(sensors);
+       sensors.forEach(sensor => {
+           var chart = new google.visualization.AreaChart(document.getElementById('chart_div_' + sensor.mqttAgentId));
+            chart.draw(data, options);
+       });
+        
+      }
+
+    
+</script>
