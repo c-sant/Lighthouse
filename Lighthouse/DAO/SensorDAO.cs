@@ -47,12 +47,12 @@ namespace Lighthouse.DAO
             SqlParameter[] parameters = GetParameters(sensor).Skip(1).ToArray();
 
             DataTable queryResponse = HelperDAO.ExecuteQueryProcedure("spInsert_Sensor", parameters);
-            //int createdId = (int)queryResponse.Rows[0][0];
+            int createdId = (int)queryResponse.Rows[0][0];
 
-            //var mqttAgentInteractor = new MqttAgentInteractor(GlobalConfig.HelixIp, GlobalConfig.MqttAgentPort);
-            //mqttAgentInteractor.CreateSensor(createdId, new Point(sensor.Location.Latitude, sensor.Location.Longitude));
+            var mqttAgentInteractor = new MqttAgentInteractor(GlobalConfig.HelixIp, GlobalConfig.MqttAgentPort);
+            mqttAgentInteractor.CreateSensor(createdId, new Point(sensor.Location.Latitude, sensor.Location.Longitude));
             
-            //new BrokerInteractor(GlobalConfig.HelixIp, GlobalConfig.BrokerPort).RegisterSensor(sensor.Id);
+            new BrokerInteractor(GlobalConfig.HelixIp, GlobalConfig.BrokerPort).RegisterSensor(sensor.Id);
         }
 
         public override void Delete(int id)
