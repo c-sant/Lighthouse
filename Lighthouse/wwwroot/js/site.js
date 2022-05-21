@@ -1,4 +1,4 @@
-﻿function aplicaFiltroConsultaAvancada() {
+﻿function advancedFilter() {
     var vLatitude = document.getElementById('latitude').value;
     var vLongitude = document.getElementById('longitude').value;
     $.ajax({

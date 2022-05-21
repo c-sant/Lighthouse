@@ -438,16 +438,31 @@ BEGIN
 END
 GO
 
-create procedure [dbo].[spSearchSensors]
-(@latitude DECIMAL(8,6),
-@longitude DECIMAL(9,6))
-as
-begin
+CREATE PROC [dbo].[spSearchSensors]
+(
+	@latitude DECIMAL(8,6),
+	@longitude DECIMAL(9,6)
+)
+AS BEGIN
+	DECLARE @latitudeIni INT,
+			@latitudeEnd INT,
+			@longitudeIni INT,
+			@longitudeEnd INT
+	
+	SET @latitudeIni =  CASE @latitude  WHEN 0 THEN -90  ELSE @latitude - 10  END
+	SET @latitudeEnd =  CASE @latitude  WHEN 0 THEN 90   ELSE @latitude + 10  END
+	SET @longitudeIni = CASE @longitude WHEN 0 THEN -180 ELSE @longitude - 10 END
+	SET @longitudeEnd = CASE @longitude WHEN 0 THEN 180  ELSE @longitude + 10 END
 
- select Sensor.* ,Location.Longitude, Location.Latitude
-from Sensor
-LEFT JOIN Location on Sensor.LocationId = Location.Id
-where 
- Location.Longitude between (@longitude - 10) and (@longitude + 10) OR
- Location.Latitude between (@latitude - 10) and (@latitude + 10); 
-end
+	SELECT
+		[Sensor].*, 
+		[Location].[Longitude], 
+		[Location].[Latitude]
+	FROM 
+		Sensor
+	LEFT JOIN [Location] ON [Sensor].[LocationId] = [Location].[Id]
+	WHERE
+ 		[Location].[Longitude] BETWEEN @longitudeIni AND @longitudeEnd OR
+ 		[Location].[Latitude] BETWEEN @latitudeIni AND @latitudeEnd 
+END
+GO

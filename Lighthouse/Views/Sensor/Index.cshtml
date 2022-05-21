@@ -21,83 +21,77 @@
     </div>
 </div>
 <div class=" d-flex justify-content-center">
-<fieldset id="areaFiltro" class="form-group" style="width:75%">
-     <legend>Consulta avançada de Sensores</legend>
-     <div class="row">
-     
-        <div class="col-lg-3">
-     Período <br />
-         <input type="text" id="latitude" class="form-control" placeholder="latitude"/>
-     </div>
-        <div class="col-lg-3">
-     <br />
-        <input type="text" id="longitude" class="form-control" placeholder="longitude"/>
-     </div>
-        <div class="col-lg-2">
-     <br />
-        <input type="button" id="btnFiltro" class="btn btn-success" value="Aplicar"
-            onclick="aplicaFiltroConsultaAvancada()" />
-     </div>
-    </div>
-</fieldset>
+    <fieldset id="areaFiltro" class="form-group" style="width:75%">
+        <legend>Consulta avançada de Sensores</legend>
+        <div class="row">     
+            <div class="col-lg-3">
+                <span>Localização</span><br />
+                <input type="text" id="latitude" class="form-control" placeholder="Latitude"/>
+            </div>
+            <div class="col-lg-3">
+                <br />
+                <input type="text" id="longitude" class="form-control" placeholder="Longitude"/>
+            </div>
+            <div class="col-lg-2">
+                <br />
+                <input type="button" id="btnFiltro" class="btn btn-success" value="Aplicar" onclick="advancedFilter()" />
+            </div>
+        </div>
+    </fieldset>
 </div>
 <div class=" d-flex justify-content-center">
     
-<div id="resultadoConsulta"  class="table-responsive"  style="width: 75%">
-    <table class="table table-striped text-center table-bordered">
-        <thead class="thead-dark">
-            <tr>
-                <th>
-                    Ação
-                </th>
-                <th>ID Broker</th>
-                <th>ID Mqtt Agent</th>
-                <th>Latitude</th>
-                <th>Longitude</th>
-                <th>Raio de Atuação (KM)</th>
-            </tr>
-        </thead>
+    <div id="resultadoConsulta"  class="table-responsive"  style="width: 75%">
+        <table class="table table-striped text-center table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Ação</th>
+                    <th>ID Broker</th>
+                    <th>ID Mqtt Agent</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                    <th>Raio de Atuação (KM)</th>
+                </tr>
+            </thead>
 
-        <tbody>
-            @if(@Model != null) 
-            {
-            
-                @foreach(var row in @Model)
+            <tbody>
+                @if(@Model != null) 
                 {
-                <tr>
-                    <!-- Ação -->
-                    <td>
-                        <a class="text-decoration-none" href="/Sensor/Edit?id=@row.Id">&#9998;</a>
-                        <a class="text-decoration-none" href="javascript:deleteEntry(@row.Id)">&#10060;</a>
-                    </td>
+            
+                    @foreach(var row in @Model)
+                    {
+                    <tr>
+                        <!-- Ação -->
+                        <td>
+                            <a class="text-decoration-none" href="/Sensor/Edit?id=@row.Id">&#9998;</a>
+                            <a class="text-decoration-none" href="javascript:deleteEntry(@row.Id)">&#10060;</a>
+                        </td>
 
-                    <!-- Broker ID -->
-                    <td>@row.BrokerId</td>
+                        <!-- Broker ID -->
+                        <td>@row.BrokerId</td>
 
-                    <!-- Mqtt Agent -->
-                    <td>@row.MqttAgentId</td>
+                        <!-- Mqtt Agent -->
+                        <td>@row.MqttAgentId</td>
 
-                    <!-- Latitude -->
-                    <td>@row.Location.Latitude.ToString("0.000000")</td>
+                        <!-- Latitude -->
+                        <td>@row.Location.Latitude.ToString("0.000000")</td>
 
-                    <!-- Longitude -->
-                    <td>@row.Location.Longitude.ToString("0.000000")</td>
+                        <!-- Longitude -->
+                        <td>@row.Location.Longitude.ToString("0.000000")</td>
 
-                    <!-- Raio de Atuação (KM) -->
-                    <td>@row.Range.ToString("0.00")</td>
+                        <!-- Raio de Atuação (KM) -->
+                        <td>@row.Range.ToString("0.00")</td>
 
-                </tr>
+                    </tr>
+                    }
                 }
-            }
-            else
-            {
-                <tr>
-                    <td colspan=6>Não há sensores cadastrados no momento.</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    
-</div>
+                else
+                {
+                    <tr>
+                        <td colspan=6>Não há sensores cadastrados no momento.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
