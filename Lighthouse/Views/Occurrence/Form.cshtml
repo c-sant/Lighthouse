@@ -33,7 +33,7 @@
                 <div class="col-md-auto row align-middle">
                     <label for="DateReference" class="col-form-label mx-3">Data da ocorrência:</label>
                     <div class="d-flex">
-                        <input type="datetime-local" asp-for="DateReference" class="form-control" min="1900-01-01T00:00" value="@DateTime.Now.ToString("s")" />
+                        <input type="datetime-local" asp-for="DateReference" class="form-control" min="1900-01-01T00:00" value="@DateTime.Today.ToString("s")" />
                         <span asp-validation-for="DateReference" class="small text-danger"></span>
                     </div>
                 </div>
