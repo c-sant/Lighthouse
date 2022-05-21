@@ -4,13 +4,6 @@
     ViewData["Title"] = "Sensores";
 }
 
-<script>
-    function deleteEntry(id) {
-        if (confirm("Deseja mesmo excluir este registro?"))
-            location.href = "/Sensor/Delete?id=" + id;
-    }
-</script>
-
 
 <div class="d-flex justify-content-between mb-4 align-items-center m-3">
     <h1 style="margin-left: 12%">Sensores</h1>
@@ -34,7 +27,7 @@
             </div>
             <div class="col-lg-2">
                 <br />
-                <input type="button" id="btnFiltro" class="btn btn-success" value="Aplicar" onclick="advancedFilter()" />
+                <input type="button" id="btnFiltro" class="btn btn-success" value="Aplicar" onclick="advancedSensorFilter()" />
             </div>
         </div>
     </fieldset>
@@ -64,7 +57,7 @@
                         <!-- Ação -->
                         <td>
                             <a class="text-decoration-none" href="/Sensor/Edit?id=@row.Id">&#9998;</a>
-                            <a class="text-decoration-none" href="javascript:deleteEntry(@row.Id)">&#10060;</a>
+                            <a class="text-decoration-none" href="javascript:deleteEntry(@row.Id, 'Sensor')">&#10060;</a>
                         </td>
 
                         <!-- Broker ID -->

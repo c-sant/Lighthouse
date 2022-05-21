@@ -1,4 +1,9 @@
-﻿function advancedFilter() {
+﻿function deleteEntry(id, controller) {
+    if (confirm("Deseja mesmo excluir este registro?"))
+        location.href = "/" + controller + "/Delete?id=" + id;
+}
+
+function advancedSensorFilter() {
     var vLatitude = document.getElementById('latitude').value;
     var vLongitude = document.getElementById('longitude').value;
     $.ajax({

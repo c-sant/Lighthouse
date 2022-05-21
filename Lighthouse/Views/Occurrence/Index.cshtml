@@ -4,14 +4,6 @@
     ViewData["Title"] = "Ocorrências";
 }
 
-<script>
-    function deleteEntry(id) {
-        if (confirm("Deseja mesmo excluir este registro?"))
-            location.href = "/Occurrence/Delete?id=" + id;
-    }
-</script>
-
-
 <div class="d-flex justify-content-between mb-4 align-items-center m-3">
     <h1 style="margin-left: 12%">Ocorrências</h1>
     <div style="margin-right: 12%">
@@ -46,7 +38,7 @@
                         <!-- Ação -->
                         <td>
                             <a class="text-decoration-none" href="/Sensor/Edit?id=@row.Id">&#9998;</a>
-                            <a class="text-decoration-none" href="javascript:deleteEntry(@row.Id)">&#10060;</a>
+                            <a class="text-decoration-none" href="javascript:deleteEntry(@row.Id, 'Occurrence')">&#10060;</a>
                         </td>
 
                         <!-- ID -->
