@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "MongoDB/MongoToSqlServer",
+      "launchUrl": "MongoDB/MongoToSqlServer?fromDate=2020-02-01",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

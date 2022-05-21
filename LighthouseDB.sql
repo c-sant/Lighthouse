@@ -360,7 +360,7 @@ GO
 
 CREATE PROC spInsert_EnvironmentInteraction( 
 	@sensorId INT,
-	@type VARCHAR(50),
+	@attrName VARCHAR(50),
 	@value VARCHAR(MAX),
 	@dateReference DATETIME
 )
@@ -372,13 +372,13 @@ AS BEGIN
 		RETURN
 	END
 
-	IF (SELECT COUNT(1) FROM Attribute a WHERE lower(a.[Name]) = lower(@type)) <> 1
+	IF (SELECT COUNT(1) FROM Attribute a WHERE lower(a.[Name]) = lower(@attrName)) <> 1
 	BEGIN
 		PRINT 'TIPO INV�LIDO!'
 	END
 
-	DECLARE @typeId INT
-	SELECT @typeId = a.Id FROM Attribute a WHERE lower(a.[Name]) = lower(@type)
+	DECLARE @attrNameId INT
+	SELECT @attrNameId = a.Id FROM Attribute a WHERE lower(a.[Name]) = lower(@attrName)
 
 	-- Criando Status Interaction
 	DECLARE @interectionIdTable TABLE (ID int)
@@ -387,7 +387,7 @@ AS BEGIN
 	(SensorId, AttributeId, [Value], DateReference)
 	OUTPUT inserted.Id INTO @interectionIdTable
 	VALUES
-	(@sensorId, @typeId, @value, @dateReference)
+	(@sensorId, @attrNameId, @value, @dateReference)
 
 	SELECT ID FROM @interectionIdTable
 END

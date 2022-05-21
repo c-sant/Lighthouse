@@ -22,14 +22,48 @@ namespace LighthouseAPI.Controllers
         }
 
         [HttpGet("MongoToSqlServer")]
-        public IActionResult Get()
+        public IActionResult Get(DateTime fromDate)
         {
-            IMongoDatabase db = DBConnection.GetConnection();
-            string sensorId = "urn:ngsi-ld:Motion:4";
-            IMongoCollection<InteractionViewModel> colInteraction = db.GetCollection<InteractionViewModel>($"sth_/_{sensorId}_Motion");
-            var documents = colInteraction.Find(_ => true).ToListAsync().Result;
-            
-            return new JsonResult(new { documents });
+            try
+            {
+                var mongoDAO = new MongoDBDAO();
+                var collections = mongoDAO.GetAllSensorCollections();
+
+                foreach ((string collection, int sqlServerId) in collections)
+                {
+                    var documents = mongoDAO.GetFromDate(collection, fromDate);
+                    InsertDocumentsIntoSqlServer(documents, sqlServerId);
+                }
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Response.StatusCode = 500;
+                return new JsonResult(new { Error = ex.Message, StackTrace = ex.StackTrace });
+            }
+        }
+
+        private void InsertDocumentsIntoSqlServer(List<InteractionViewModel> documents, int sqlServerId)
+        {
+            var sqlDAO = new Lighthouse.DAO.EnvironmentInteractionDAO();
+            var attributesAvailable = new HashSet<string> { "temperature", "humidity", "rainpower" };
+
+            foreach (InteractionViewModel doc in documents)
+            {
+                if (attributesAvailable.Contains(doc.AttributeName.ToLower()))
+                {
+                    var sqlModel = new Lighthouse.Models.EnvironmentInteractionViewModel()
+                    {
+                        Attribute = new Lighthouse.Models.AttributeViewModel() { Name = doc.AttributeName },
+                        Sensor = new Lighthouse.Models.SensorViewModel() { Id = sqlServerId },
+                        Value = doc.Valor,
+                        DateReference = doc.Date,
+                    };
+
+                    sqlDAO.Insert(sqlModel);
+                }
+            }
         }
     }
 }
