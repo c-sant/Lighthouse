@@ -459,10 +459,10 @@ AS BEGIN
 		[Location].[Longitude], 
 		[Location].[Latitude]
 	FROM 
-		Sensor
+		[Sensor]
 	LEFT JOIN [Location] ON [Sensor].[LocationId] = [Location].[Id]
 	WHERE
- 		[Location].[Longitude] BETWEEN @longitudeIni AND @longitudeEnd OR
+ 		[Location].[Longitude] BETWEEN @longitudeIni AND @longitudeEnd AND
  		[Location].[Latitude] BETWEEN @latitudeIni AND @latitudeEnd 
 END
 GO
