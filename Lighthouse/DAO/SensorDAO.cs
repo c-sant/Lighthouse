@@ -70,7 +70,7 @@ namespace Lighthouse.DAO
             base.Update(sensor);
         }
 
-        public List<SensorViewModel> SearchSensors(Double latitude, Double longitude)
+        public List<SensorViewModel> SearchSensors(double latitude, double longitude)
         {
             SqlParameter[] parameters = new SqlParameter[]
             {
@@ -84,7 +84,6 @@ namespace Lighthouse.DAO
                 list.Add(RowToModel(row));
 
             return list;
-
         }
     }
 }

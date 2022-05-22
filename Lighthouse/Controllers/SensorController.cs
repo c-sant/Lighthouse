@@ -30,7 +30,7 @@ namespace Lighthouse.Controllers
                 ModelState.AddModelError("Range", "O alcance não pode ser menor que zero.");
         }
 
-        public IActionResult ObtemDadosConsultaAvancada(double latitude, double longitude)
+        public IActionResult ExecuteAdvancedQuery(double latitude, double longitude)
         {
             try
             {
@@ -51,7 +51,7 @@ namespace Lighthouse.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { erro = true, msg = ex.Message });
+                return Json(new { error = true, msg = ex.Message });
             }
         }
 
