@@ -75,7 +75,7 @@ namespace Lighthouse.Controllers
                         DAO.Update(model);
                     }
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Login");
                 }
             }
             catch (Exception ex)
