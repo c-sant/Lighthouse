@@ -498,3 +498,4 @@ AS BEGIN
 		[Occurrence].[DateReference] BETWEEN @initialDate AND @endDate
 END
 GO
+
