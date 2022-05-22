@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "Sobre";
+}
+
+<section id="team" class="mt-4">
+    <div class="container">
+        <h2 class="text-center text-monospace">NOSSO TIME</h2>
+        <div>
+            <div class="row d-flex justify-content-center">
+                @{
+                    string[] names = { "Guilherme Turtera", "Caio Rodrigues", "Carlos Santos", "Nathan Vilela", "Gabriel Mendes" };
+                    string[] raArr = { "081200007", "081200011", "081200016", "081200028", "081200037" };
+                    for(int i = 0; i < 5; i++)
+                    {
+                        string imgSrc = $"images/{raArr[i]}.jpg",
+                               imgAlt = $"Foto do {names[i]}";
+                        <div class="col-xs-8 col-sm-4 col-md-3 m-3">
+                            <div class="card">
+                                <img class="card-img-top img-fluid" src="@imgSrc" alt="@imgAlt">
+                                <div class="card-header">
+                                    <h5>@names[i]</h5>
+                                </div>
+                                <div class="card-body text-center">
+                                    <span class="text-monospace font-weight-bold">R.A.: @raArr[i]</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</section>
