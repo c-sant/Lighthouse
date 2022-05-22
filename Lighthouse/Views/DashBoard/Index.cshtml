@@ -26,18 +26,19 @@
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);
       
-        function getSensors() {
-            var sensor = {}
-        $.ajax({
-            url: "/DashBoard/GetSensors",
-            success: function (dado) {
-                sensor = dado.dados;
-                return sensor;
-            },
-        });
+      async function getSensors() {
+            var result = await $.ajax({
+                url: "/DashBoard/GetSensors",
+                success: function (dado) {
+                    return dado;
+                },
+            });
+            
+            return result;
+      }
 
-        }
-      function drawChart() {
+
+      async function drawChart() {
         
         var data = google.visualization.arrayToDataTable([
           ['Data/Hora', 'Temperatura', 'Umidade'],
@@ -53,13 +54,13 @@
           vAxis: {minValue: 0}
         };
 
-        var sensors = getSensors();
-        console.log(sensors);
-       sensors.forEach(sensor => {
-           var chart = new google.visualization.AreaChart(document.getElementById('chart_div_' + sensor.mqttAgentId));
-            chart.draw(data, options);
-       });
-        
+        var sensors = await getSensors();
+
+           sensors.data.forEach(sensor => {
+                var chart = new google.visualization.AreaChart(document.getElementById('chart_div_' + sensor.mqttAgentId));
+                options.title = 'Sensor ' + sensor.mqttAgentId
+                chart.draw(data, options);
+           });
       }
 
     

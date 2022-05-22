@@ -16,7 +16,7 @@ namespace Lighthouse.Controllers
         public IActionResult GetSensors()
         {
             var sensors = DAO.ReadAll();
-            return Json(new { dados = sensors });
+            return Json(new { data = sensors });
         }
  
     }
