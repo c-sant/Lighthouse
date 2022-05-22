@@ -54,5 +54,6 @@ namespace Lighthouse.Controllers
                 return Json(new { erro = true, msg = ex.Message });
             }
         }
+
     }
 }
