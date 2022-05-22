@@ -14,58 +14,90 @@
 </div>
 
 <div class=" d-flex justify-content-center">
-    <div class="table-responsive" style="width: 75%">
+    <fieldset id="areaFiltro" class="form-group" style="width:75%">
+        <legend>Consulta avançada de Ocorrências</legend>
+        <div class="row">     
+            <div class="col-lg-3">
+                <span>Localização</span><br />
+                <input type="text" id="latitude" class="form-control" placeholder="Latitude"/>
+            </div>
 
-    <table class="table table-striped text-center table-bordered">
-        <thead class="thead-dark">
-            <tr>
-                <th>Ação</th>
-                <th>Id</th>
-                <th>Latitude</th>
-                <th>Longitude</th>
-                <th>Data</th>
-                <th>Observações</th>
-            </tr>
-        </thead>
+            <div class="col-lg-3">
+                <br />
+                <input type="text" id="longitude" class="form-control" placeholder="Longitude"/>
+            </div>
 
-        <tbody>
-            @if(@Model != null) 
-            {
+            <div class="col-lg-3">
+                <span>Data Inicial</span>
+                <input type="datetime-local" id="initial-date" class="form-control" min="1900-01-01T00:00" />
+            </div>
+
+            <div class="col-lg-3">
+                <span>Data Final</span>
+                <input type="datetime-local" id="end-date" class="form-control" min="1900-01-01T00:00" />
+            </div>
+
+            <div class="col-lg-2">
+                <br />
+                <input type="button" id="btnFiltro" class="btn btn-success" value="Aplicar" onclick="advancedOccurrenceFilter()" />
+            </div>
+        </div>
+    </fieldset>
+</div>
+
+<div class=" d-flex justify-content-center">
+    <div id="resultadoConsulta" class="table-responsive" style="width:75%">
+
+        <table class="table table-striped text-center table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Ação</th>
+                    <th>Id</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                    <th>Data</th>
+                    <th>Observações</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if(@Model != null) 
+                {
             
-                @foreach(var row in @Model)
+                    @foreach(var row in @Model)
+                    {
+                        <tr>
+                            <!-- Ação -->
+                            <td>
+                                <a class="text-decoration-none" href="/Occurrence/Edit?id=@row.Id">&#9998;</a>
+                                <a class="text-decoration-none" href="javascript:deleteEntry(@row.Id, 'Occurrence')">&#10060;</a>
+                            </td>
+
+                            <!-- ID -->
+                            <td>@row.Id</td>
+
+                            <!-- Latitude -->
+                            <td>@row.Location.Latitude.ToString("0.000000")</td>
+
+                            <!-- Longitude -->
+                            <td>@row.Location.Longitude.ToString("0.000000")</td>
+
+                            <!-- Data e hora da ocorrência -->
+                            <td>@row.DateReference.ToShortDateString()</td>
+
+                            <!-- Observações -->
+                            <td>@row.Details</td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <!-- Ação -->
-                        <td>
-                            <a class="text-decoration-none" href="/Sensor/Edit?id=@row.Id">&#9998;</a>
-                            <a class="text-decoration-none" href="javascript:deleteEntry(@row.Id, 'Occurrence')">&#10060;</a>
-                        </td>
-
-                        <!-- ID -->
-                        <td>@row.Id</td>
-
-                        <!-- Latitude -->
-                        <td>@row.Location.Latitude.ToString("0.000000")</td>
-
-                        <!-- Longitude -->
-                        <td>@row.Location.Longitude.ToString("0.000000")</td>
-
-                        <!-- Data e hora da ocorrência -->
-                        <td>@row.DateReference.ToShortDateString()</td>
-
-                        <!-- Observações -->
-                        <td>@row.Details</td>
+                        <td colspan=6>Não há ocorrências cadastradas no momento.</td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr>
-                    <td colspan=6>Não há ocorrências cadastradas no momento.</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
+            </tbody>
+        </table>
+    </div>
 </div>
 

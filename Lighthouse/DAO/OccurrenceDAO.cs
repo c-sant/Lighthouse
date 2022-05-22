@@ -1,5 +1,6 @@
 ﻿using Lighthouse.Models;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -47,6 +48,25 @@ namespace Lighthouse.DAO
 
             HelperDAO.ExecuteProcedure($"spInsert_{_tableName}", parameters);
 
+        }
+
+        public List<OccurrenceViewModel> SearchOccurrences(double latitude, double longitude, DateTime initialDate, DateTime endDate)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+                new SqlParameter("latitude", latitude),
+                new SqlParameter("longitude", longitude),
+                new SqlParameter("initialDate", initialDate),
+                new SqlParameter("endDate", endDate)
+            };
+
+            List<OccurrenceViewModel> list = new List<OccurrenceViewModel>();
+            DataTable entries = HelperDAO.ExecuteQueryProcedure("spSearchOccurrences", parameters);
+
+            foreach (DataRow row in entries.Rows)
+                list.Add(RowToModel(row));
+
+            return list;
         }
     }
 }

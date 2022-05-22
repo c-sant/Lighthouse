@@ -1,0 +1,50 @@
+﻿<table class="table table-striped text-center table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th>Ação</th>
+            <th>Id</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th>Data</th>
+            <th>Observações</th>
+        </tr>
+    </thead>
+    
+    <tbody>
+        @if(@Model != null) 
+        {
+    
+            @foreach(var row in @Model)
+            {
+                <tr>
+                    <!-- Ação -->
+                    <td>
+                        <a class="text-decoration-none" href="/Occurrence/Edit?id=@row.Id">&#9998;</a>
+                        <a class="text-decoration-none" href="javascript:deleteEntry(@row.Id, 'Occurrence')">&#10060;</a>
+                    </td>
+    
+                    <!-- ID -->
+                    <td>@row.Id</td>
+    
+                    <!-- Latitude -->
+                    <td>@row.Location.Latitude.ToString("0.000000")</td>
+    
+                    <!-- Longitude -->
+                    <td>@row.Location.Longitude.ToString("0.000000")</td>
+    
+                    <!-- Data e hora da ocorrência -->
+                    <td>@row.DateReference.ToShortDateString()</td>
+    
+                    <!-- Observações -->
+                    <td>@row.Details</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan=6>Não há ocorrências cadastradas no momento.</td>
+            </tr>
+        }
+    </tbody>
+</table>

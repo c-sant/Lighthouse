@@ -466,3 +466,35 @@ AS BEGIN
  		[Location].[Latitude] BETWEEN @latitudeIni AND @latitudeEnd 
 END
 GO
+
+CREATE PROC [dbo].[spSearchOccurrences]
+(
+	@latitude DECIMAL(8, 6),
+	@longitude DECIMAL(9, 6),
+	@initialDate DATETIME,
+	@endDate DATETIME
+)
+AS BEGIN
+	DECLARE @latitudeIni INT,
+			@latitudeEnd INT,
+			@longitudeIni INT,
+			@longitudeEnd INT
+
+	SET @latitudeIni =  CASE @latitude  WHEN 0 THEN -90  ELSE @latitude - 10  END
+	SET @latitudeEnd =  CASE @latitude  WHEN 0 THEN 90   ELSE @latitude + 10  END
+	SET @longitudeIni = CASE @longitude WHEN 0 THEN -180 ELSE @longitude - 10 END
+	SET @longitudeEnd = CASE @longitude WHEN 0 THEN 180  ELSE @longitude + 10 END
+	
+	SELECT
+		[Occurrence].*, 
+		[Location].[Longitude], 
+		[Location].[Latitude]
+	FROM 
+		[Occurrence]
+	LEFT JOIN [Location] ON [Occurrence].[LocationId] = [Location].[Id]
+	WHERE
+ 		[Location].[Longitude] BETWEEN @longitudeIni AND @longitudeEnd AND
+ 		[Location].[Latitude] BETWEEN @latitudeIni AND @latitudeEnd AND
+		[Occurrence].[DateReference] BETWEEN @initialDate AND @endDate
+END
+GO
