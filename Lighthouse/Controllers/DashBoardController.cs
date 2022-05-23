@@ -39,6 +39,13 @@ namespace Lighthouse.Controllers
             var sensors = DAO.ReadAll();
             return Json(new { data = sensors });
         }
+
+        public IActionResult GetOccurrences(double sensorLatitude, double sensorLongitude, double sensorRange)
+        {
+            var occurrences = (new OccurrenceDAO()).SearchOccurrencesAroundSensor(sensorLatitude, sensorLongitude, sensorRange);
+
+            return Json(new { data = occurrences });
+        }
  
     }
 }

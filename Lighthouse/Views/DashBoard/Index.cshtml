@@ -3,6 +3,9 @@
 <div class="body-custom" style="height: 100%">
 
     <div type="hidden" id="div_id">@Model.Id</div>
+    <div type="hidden" id="div_lat">@Model.Location.Latitude</div>
+    <div type="hidden" id="div_long">@Model.Location.Longitude</div>
+    <div type="hidden" id="div_range">@Model.Range</div>
  
     <div class="d-flex justify-content-center " style="height: 30em; color: black;">
         <div id="chart_div_temperature" style="width: 60%; height: 80%; background-color: white; margin-top: 3%;">
@@ -116,10 +119,7 @@
            
           var data_occurency = google.visualization.arrayToDataTable([
               ["Mês", "N° de Ocorrências", { role: "style" } ],
-              ["Janeiro/2020", 8, "silver"],
-              ["Fevereiro/2020", 10, "silver"],
-              ["Março/2020", 19, "silver"],
-              ["Abril/2020", 21, "silver"]
+              
           ]);
 
           var view_occurency = new google.visualization.DataView(data_occurency);
@@ -161,7 +161,15 @@
         });
         console.log(dictSensors);
         return dictSensors;
-}
+      }
+
+      async function refreshOccurrencesData() {
+          var lat = document.getElementById('div_lat').innerText;
+          var long = document.getElementById('div_long').innerText;
+          var range = document.getElementById('div_range').innerText;
+
+          \
+      }
 
 
       

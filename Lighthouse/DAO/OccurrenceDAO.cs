@@ -52,7 +52,7 @@ namespace Lighthouse.DAO
 
         public List<OccurrenceViewModel> SearchOccurrences(double latitude, double longitude, DateTime initialDate, DateTime endDate)
         {
-            SqlParameter[] parameters = new SqlParameter[]
+            SqlParameter[] parameters =
             {
                 new SqlParameter("latitude", latitude),
                 new SqlParameter("longitude", longitude),
@@ -60,8 +60,26 @@ namespace Lighthouse.DAO
                 new SqlParameter("endDate", endDate)
             };
 
-            List<OccurrenceViewModel> list = new List<OccurrenceViewModel>();
+            var list = new List<OccurrenceViewModel>();
             DataTable entries = HelperDAO.ExecuteQueryProcedure("spSearchOccurrences", parameters);
+
+            foreach (DataRow row in entries.Rows)
+                list.Add(RowToModel(row));
+
+            return list;
+        }
+
+        public List<OccurrenceViewModel> SearchOccurrencesAroundSensor(double sensorLatitude, double sensorLongitude, double sensorRange)
+        {
+            SqlParameter[] parameters =
+            {
+                new SqlParameter("sensorLatitude", sensorLatitude),
+                new SqlParameter("sensorLongitude", sensorLongitude),
+                new SqlParameter("sensorRange", sensorRange)
+            };
+
+            var list = new List<OccurrenceViewModel>();
+            DataTable entries = HelperDAO.ExecuteQueryProcedure("spGetOccurrencesAroundSensor", parameters);
 
             foreach (DataRow row in entries.Rows)
                 list.Add(RowToModel(row));

@@ -607,13 +607,16 @@ CREATE PROC spGetOccurrencesAroundSensor(
 	@sensorRange DECIMAL(5, 2)
 )
 AS BEGIN
-	SELECT *
+	SELECT
+		CAST([DateReference] AS DATE) AS [Date], 
+		COUNT(*) AS Total 
 	FROM 
 		[Occurrence] t
 	LEFT JOIN
 		[Location] l ON t.[LocationId] = l.[Id]
 	WHERE
 		[dbo].getDistance(@sensorLatitude, @sensorLongitude, l.[Latitude], l.[Longitude]) <= @sensorRange
+	GROUP BY 
+		CAST([DateReference] AS DATE)
 END
-
-SELECT [dbo].getDistance(-23.700389, -46.532379, -23.6965438, -46.5347714)
+GO
