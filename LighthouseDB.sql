@@ -577,7 +577,7 @@ END
 
 
 SELECT * FROM Sensor
-EXEC getInformationSensor 1
+EXEC sp_InformationSensor 1
 
 
 
