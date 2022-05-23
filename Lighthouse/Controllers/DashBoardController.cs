@@ -1,6 +1,7 @@
 ﻿using Lighthouse.DAO;
 using Lighthouse.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace Lighthouse.Controllers
 {
@@ -21,7 +22,16 @@ namespace Lighthouse.Controllers
         public IActionResult ShowInformationSensor(int Id)
         {
             SensorViewModel sensor = DAO.Read(Id);
-            return RedirectToAction("Index", sensor);
+            return View("Index", sensor);
+        }
+
+        public IActionResult GetData(int sensorId)
+        {
+            EnvironmentInteractionDAO DAOInformation = new EnvironmentInteractionDAO();
+            List<EnvironmentInteractionViewModel> list = DAOInformation.GetDataSensors(sensorId);
+
+
+            return Json(new { data = list });
         }
 
         public IActionResult GetSensors()

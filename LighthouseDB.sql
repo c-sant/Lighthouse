@@ -499,3 +499,93 @@ AS BEGIN
 END
 GO
 
+SELECT * FROM EnvironmentInteraction
+
+
+ALTER PROC sp_InformationSensor(@sensorId INT)
+AS BEGIN
+	
+	DROP TABLE IF EXISTS ##temp
+	DROP VIEW IF EXISTS vw_datas
+	
+	
+	CREATE TABLE ##temp(
+		[Id] INT ,
+		[SensorId] INT ,
+		[AttributeId] INT,
+		[Value] VARCHAR(MAX) ,
+		[DateReference] DATETIME 
+	)
+	
+	
+	exec('CREATE VIEW vw_datas AS
+	SELECT * FROM [dbo].[EnvironmentInteraction]
+	WHERE SensorId = ' + @sensorId)
+
+	INSERT INTO ##temp
+	SELECT * FROM vw_datas
+
+
+	DECLARE meuCursor CURSOR STATIC FORWARD_ONLY FOR
+		SELECT env.Id ,sensorId, env.AttributeId, env.Value  FROM ##temp env
+
+	--criando as variaveis para uso do cursor
+	DECLARE @id INT
+	DECLARE @sensorIdCursor INT
+	DECLARE @attributeId INT
+	DECLARE @value VARCHAR(MAX)
+
+	--abre o cursor
+	OPEN meuCursor -- neste momento o SELECT será executado 
+	--faz a primeira leitura
+	--a ordem das variaveis devem ser compativeis com a 
+	--ordem dos campos no select
+	FETCH NEXT FROM meuCursor
+		INTO @id, @sensorIdCursor, @attributeId, @value
+
+	--leitura até o final
+	WHILE @@FETCH_STATUS = 0 
+	BEGIN
+
+		
+		IF @attributeId = 3 AND @attributeId != 1 AND @attributeId != 2
+		BEGIN
+			IF CAST(dbo.reorganizeRange(@value) AS DECIMAL(8, 2)) > 0
+			BEGIN
+				UPDATE ##temp
+				SET Value = dbo.reorganizeRange(@value)
+				WHERE (SensorId = @sensorIdCursor) AND (AttributeId = @attributeId) AND (Id = @id)
+			END
+		END
+
+		--lê o proximo
+		FETCH NEXT FROM meuCursor
+			INTO @id, @sensorIdCursor, @attributeId, @value
+	END
+
+	--fecha o cursor
+	CLOSE meuCursor
+	--desaloca da memoria
+	DEALLOCATE meuCursor
+
+	SELECT * FROM ##temp
+
+
+END
+
+
+
+
+SELECT * FROM Sensor
+EXEC getInformationSensor 1
+
+
+
+
+ALTER FUNCTION reorganizeRange(@value VARCHAR(MAX))
+RETURNS VARCHAR(MAX)
+AS
+BEGIN
+	RETURN CAST((((CAST(@value AS DECIMAL(8,2)) - 100) / 4095)*100) AS VARCHAR(MAX))
+END
+

@@ -27,7 +27,7 @@ namespace Lighthouse.DAO
             return new EnvironmentInteractionViewModel()
             {
                 Id = Convert.ToInt32(row["Id"]),
-                Attribute = new AttributeDAO().Read((int)row["SensorId"]), 
+                Attribute = new AttributeDAO().Read((int)row["AttributeId"]), 
                 Sensor = new SensorDAO().Read((int)row["SensorId"]),
                 Value = row["Value"].ToString(),
                 DateReference = (DateTime)row["DateReference"]
@@ -44,6 +44,21 @@ namespace Lighthouse.DAO
         {
             SqlParameter[] parameters = GetParameters(model).Skip(1).ToArray();
             HelperDAO.ExecuteProcedure($"spInsert_{_tableName}", parameters);
+        }
+
+        public List<EnvironmentInteractionViewModel> GetDataSensors(int sensorId)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+                new SqlParameter("sensorId", sensorId)
+            };
+            List<EnvironmentInteractionViewModel> list = new List<EnvironmentInteractionViewModel>();
+            DataTable entries = HelperDAO.ExecuteQueryProcedure("sp_InformationSensor", parameters);
+
+            foreach (DataRow row in entries.Rows)
+                list.Add(RowToModel(row));
+
+            return list;
         }
     }
 }

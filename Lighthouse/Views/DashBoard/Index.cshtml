@@ -1,6 +1,8 @@
 ﻿@model SensorViewModel
 
 <div class="body-custom" style="height: 100%">
+
+    <div type="hidden" id="div_id">@Model.Id</div>
  
     <div class="d-flex justify-content-center " style="height: 30em; color: black;">
         <div id="chart_div_temperature" style="width: 60%; height: 80%; background-color: white; margin-top: 3%;">
@@ -34,15 +36,17 @@
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);
       google.charts.setOnLoadCallback(drawBars);
-  
-      function drawChart() {
-        var values = [['Data/Hora', 'Temperatura'],
-          ['10:00',  25.5],
-          ['10:01',   25.8],
-          ['10:02',   25.4],
-          ['10:03',   25.9]]
+      //refreshData();
+
+      
+
+      async function drawChart() {
+        var result = await refreshData()
+        var list_temperature = [['Data/Hora', 'Temperatura'],['0', 0]]
+        var list_humidity = [['Data/Hora', 'Umidade']]
+        var list_rainPower = [['Data/Hora', 'Intensidade de Chuva']]
         // Criação de dados do DashBoard de Temperatura --------------------------
-        var data_temperature = google.visualization.arrayToDataTable(values);
+        var data_temperature = google.visualization.arrayToDataTable(list_temperature);
 
         var options_temperature = {
           title: 'Sensor Temperatura',
@@ -54,13 +58,7 @@
         //------------------------------------------------------------------------
 
         // Criação de dados do DashBoard de Umidade ------------------------------
-        var data_humidity = google.visualization.arrayToDataTable([
-          ['Data/Hora', 'Umidade'],
-          ['10:00',  25],
-          ['10:01',   30],
-          ['10:02',   28],
-          ['10:03',   29]
-        ]);
+        var data_humidity = google.visualization.arrayToDataTable(list_humidity);
 
         var options_humidity = {
           title: 'Sensor Umidade',
@@ -71,17 +69,11 @@
         //------------------------------------------------------------------------
         
         // Criação de dados do DashBoard de Intensidade de Chuva -----------------
-        var data_rainPower = google.visualization.arrayToDataTable([
-          ['Data/Hora', 'Intensidade de Chuva'],
-          ['10:00',  25],
-          ['10:01',   30],
-          ['10:02',   28],
-          ['10:03',   29]
-        ]);
+        var data_rainPower = google.visualization.arrayToDataTable(list_rainPower);
 
         var options_rainPower = {
           title: 'Sensor de chuva',
-          hAxis: {title: 'Histórico de chuva',  titleTextStyle: {color: '#333'}, scaleType: "number"},
+          hAxis: {title: 'Histórico de chuva',  titleTextStyle: {color: '#333'}},
           vAxis: {minValue: 0, maxValue:100},
           colors: ['#250a8f']
         };
@@ -100,11 +92,24 @@
 
         //------------------------------------------------------------------------
         var count = 0;
+        var lastIndex = result['1'].length
+        setInterval(function(){
+            if(count < lastIndex){
+                count++;
+                list_temperature.push([result['1'][count].dateReference, Number(result['1'][count].value)])
+                list_humidity.push([result['2'][count].dateReference, Number(result['2'][count].value)])
+                list_rainPower.push([result['3'][count].dateReference, Number(result['3'][count].value)])
+            }
+            
+        }, 300000)
         setInterval(function() {
-                
-                data_temperature.addRow(['10:' + count++ , 20 + Math.round(20 * Math.random())])
+                data_temperature = google.visualization.arrayToDataTable(list_temperature);
+                data_humidity =  google.visualization.arrayToDataTable(list_humidity);
+                data_rainPower = google.visualization.arrayToDataTable(list_rainPower);
                 chart_temperature.draw(data_temperature, options_temperature);
-            }, 1000);
+                chart_humidity.draw(data_humidity, options_humidity);
+                chart_rainPower.draw(data_rainPower, options_rainPower);
+            }, 300000);
       }
 
       function drawBars(){
@@ -135,13 +140,31 @@
             chart_occurency.draw(view_occurency, options_occurency);
       }
 
-      function refreshData(data, options, chart, value1, value2){
-            setInterval(function() {
-                data.setValue(0, 0, value1 + Math.round(20 * Math.random()));
-                data.setValue(0, 1, value2 + Math.round(20 * Math.random()));
-                chart.draw(data, options);
-            }, 1000);
-      }
+      async function refreshData() {
+        var id = document.getElementById('div_id').innerText;
+        var dictSensors = {
+        '1': [],
+        '2' : [],
+        '3' : []
+        }
+
+        console.log(id);
+        var result = await $.ajax({
+            url: "/DashBoard/GetData?sensorId=" + id,
+            success: function (dado) {
+                return dado;
+            },
+        });
+        
+        result.data.forEach(sensor => {
+            dictSensors[sensor.attribute.id].push(sensor)
+        });
+        console.log(dictSensors);
+        return dictSensors;
+}
+
+
+      
 
       
 
