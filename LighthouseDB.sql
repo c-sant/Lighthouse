@@ -500,9 +500,9 @@ END
 GO
 
 SELECT * FROM EnvironmentInteraction
+GO
 
-
-ALTER PROC sp_InformationSensor(@sensorId INT)
+CREATE PROC sp_InformationSensor(@sensorId INT)
 AS BEGIN
 	
 	DROP TABLE IF EXISTS ##temp
@@ -572,20 +572,48 @@ AS BEGIN
 
 
 END
-
-
-
+GO
 
 SELECT * FROM Sensor
 EXEC sp_InformationSensor 1
+GO
 
-
-
-
-ALTER FUNCTION reorganizeRange(@value VARCHAR(MAX))
+CREATE FUNCTION reorganizeRange(@value VARCHAR(MAX))
 RETURNS VARCHAR(MAX)
 AS
 BEGIN
 	RETURN CAST((((CAST(@value AS DECIMAL(8,2)) - 100) / 4095)*100) AS VARCHAR(MAX))
 END
+GO
 
+CREATE FUNCTION getDistance(
+	@srcLatitude DECIMAL(8, 6),
+	@srcLongitude DECIMAL(9, 6),
+	@destLatitude DECIMAL(8, 6),
+	@destLongitude DECIMAL(9, 6)
+)
+RETURNS DECIMAL(8, 6)
+BEGIN
+	DECLARE @source GEOGRAPHY = GEOGRAPHY::Point(@srcLatitude, @srcLongitude, 4326)
+	DECLARE @destination GEOGRAPHY = GEOGRAPHY::Point(@destLatitude, @destLongitude, 4326)
+
+	RETURN @source.STDistance(@destination) / 1000
+END
+GO
+
+CREATE PROC spGetOccurrencesAroundSensor(
+	@sensorLatitude DECIMAL(8, 6),
+	@sensorLongitude DECIMAL(9, 6),
+	@sensorRange DECIMAL(5, 2)
+)
+AS BEGIN
+	SELECT *
+	FROM 
+		[Occurrence] t
+	LEFT JOIN
+		[Location] l ON t.[LocationId] = l.[Id]
+	WHERE
+		[dbo].getDistance(@sensorLatitude, @sensorLongitude, l.[Latitude], l.[Longitude]) <= @sensorRange
+END
+
+SELECT [dbo].getDistance(-23.700389, -46.532379, -23.6965438, -46.5347714)
