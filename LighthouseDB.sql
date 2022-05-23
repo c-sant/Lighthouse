@@ -608,6 +608,7 @@ CREATE PROC spGetOccurrencesAroundSensor(
 )
 AS BEGIN
 	SELECT
+		Id
 		CAST([DateReference] AS DATE) AS [Date], 
 		COUNT(*) AS Total 
 	FROM 

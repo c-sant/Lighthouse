@@ -19,7 +19,8 @@ namespace Lighthouse.DAO
         {
             return new OccurrenceViewModel()
             {
-                Id = Convert.ToInt32(row["Id"]),
+              
+                Id = Convert.ToInt32(row.Table.Columns.Contains("Id") != true ? 0 : row["Id"]),
                 Location = new LocationViewModel()
                 {
                     Longitude = Convert.ToDouble(row["Longitude"]),
@@ -27,6 +28,15 @@ namespace Lighthouse.DAO
                 },
                 DateReference = Convert.ToDateTime(row["DateReference"]),
                 Details = row["Details"].ToString()
+            };
+        }
+
+        public OccurrenceGroupViewModel RowToModelGroup(DataRow row)
+        {
+            return new OccurrenceGroupViewModel()
+            {
+                DateReference = Convert.ToDateTime(row["Date"]),
+                Total = Convert.ToInt32(row["Total"])
             };
         }
 
@@ -69,7 +79,7 @@ namespace Lighthouse.DAO
             return list;
         }
 
-        public List<OccurrenceViewModel> SearchOccurrencesAroundSensor(double sensorLatitude, double sensorLongitude, double sensorRange)
+        public List<OccurrenceGroupViewModel> SearchOccurrencesAroundSensor(double sensorLatitude, double sensorLongitude, double sensorRange)
         {
             SqlParameter[] parameters =
             {
@@ -78,11 +88,11 @@ namespace Lighthouse.DAO
                 new SqlParameter("sensorRange", sensorRange)
             };
 
-            var list = new List<OccurrenceViewModel>();
+            var list = new List<OccurrenceGroupViewModel>();
             DataTable entries = HelperDAO.ExecuteQueryProcedure("spGetOccurrencesAroundSensor", parameters);
 
             foreach (DataRow row in entries.Rows)
-                list.Add(RowToModel(row));
+                list.Add(RowToModelGroup(row));
 
             return list;
         }
