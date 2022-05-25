@@ -18,7 +18,7 @@
         <legend>Consulta avançada de Ocorrências</legend>
         <div class="row">     
             <div class="col-lg-3">
-                <span>Localização</span><br />
+                <span>Localização aproximada</span><br />
                 <input type="text" id="latitude" class="form-control" placeholder="Latitude"/>
             </div>
 
@@ -52,7 +52,7 @@
             <thead class="thead-dark">
                 <tr>
                     <th>Ação</th>
-                    <th>Id</th>
+                    @* <th>Id</th> *@
                     <th>Latitude</th>
                     <th>Longitude</th>
                     <th>Data</th>
@@ -74,7 +74,7 @@
                             </td>
 
                             <!-- ID -->
-                            <td>@row.Id</td>
+                            @* <td>@row.Id</td> *@
 
                             <!-- Latitude -->
                             <td>@row.Location.Latitude.ToString("0.000000")</td>

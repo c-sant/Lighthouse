@@ -597,7 +597,7 @@ BEGIN
 	DECLARE @source GEOGRAPHY = GEOGRAPHY::Point(@srcLatitude, @srcLongitude, 4326)
 	DECLARE @destination GEOGRAPHY = GEOGRAPHY::Point(@destLatitude, @destLongitude, 4326)
 
-	RETURN @source.STDistance(@destination) / 1000
+	RETURN CAST(ROUND(@source.STDistance(@destination) / 1000, 6) AS DECIMAL(8, 6)) 
 END
 GO
 
@@ -608,7 +608,6 @@ CREATE PROC spGetOccurrencesAroundSensor(
 )
 AS BEGIN
 	SELECT
-		Id
 		CAST([DateReference] AS DATE) AS [Date], 
 		COUNT(*) AS Total 
 	FROM 

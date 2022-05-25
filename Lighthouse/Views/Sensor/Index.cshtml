@@ -18,7 +18,7 @@
         <legend>Consulta avançada de Sensores</legend>
         <div class="row">     
             <div class="col-lg-3">
-                <span>Localização</span><br />
+                <span>Localização aproximada</span><br />
                 <input type="text" id="latitude" class="form-control" placeholder="Latitude"/>
             </div>
             <div class="col-lg-3">
@@ -39,8 +39,8 @@
             <thead class="thead-dark">
                 <tr>
                     <th>Ação</th>
-                    <th>ID Broker</th>
-                    <th>ID Mqtt Agent</th>
+                    @* <th>ID Broker</th> *@
+                    @* <th>ID Mqtt Agent</th> *@
                     <th>Latitude</th>
                     <th>Longitude</th>
                     <th>Raio de Atuação (KM)</th>
@@ -62,10 +62,10 @@
                         </td>
 
                         <!-- Broker ID -->
-                        <td>@row.BrokerId</td>
+                        @* <td>@row.BrokerId</td> *@
 
                         <!-- Mqtt Agent -->
-                        <td>@row.MqttAgentId</td>
+                        @* <td>@row.MqttAgentId</td> *@
 
                         <!-- Latitude -->
                         <td>@row.Location.Latitude.ToString("0.000000")</td>

@@ -1,5 +1,9 @@
+USE LighthouseDB
+GO
+
+
 DECLARE @sensorCount INT = 0,
-        @sensorTotal INT = 1
+        @sensorTotal INT = 4
 
 WHILE @sensorCount < @sensorTotal
 BEGIN
